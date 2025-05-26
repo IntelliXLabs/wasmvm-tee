@@ -2,7 +2,6 @@ package dtvm
 
 import (
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 
@@ -44,14 +43,4 @@ func (s *Server) calculateOutputHash(outputs []*Value) ([32]byte, error) {
 	}
 
 	return s.calculateStandardHash(messages...)
-}
-
-// encodeStringsToBase64 converts string array to base64 encoded string array
-// Used for encoding input parameters in the execution result
-func encodeStringsToBase64(strs []string) []string {
-	encoded := make([]string, len(strs))
-	for i, str := range strs {
-		encoded[i] = base64.StdEncoding.EncodeToString([]byte(str))
-	}
-	return encoded
 }
