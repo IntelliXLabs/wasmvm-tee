@@ -20,7 +20,7 @@ type Server struct {
 // Execute handles DTVM execution requests in TEE environment
 // Validates request, decodes bytecode and inputs, executes DTVM, and returns results with attestation
 func (s *Server) Execute(ctx context.Context, req *DTVMExecutionRequest) (*DTVMExecutionResponse, error) {
-	// Validate request 
+	// Validate request
 	if req.Execution == nil {
 		return nil, fmt.Errorf("execution request is nil")
 	}
@@ -32,16 +32,6 @@ func (s *Server) Execute(ctx context.Context, req *DTVMExecutionRequest) (*DTVME
 	bytecode, err := base64.StdEncoding.DecodeString(req.Execution.Bytecode)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode bytecode: %v", err)
-	}
-
-	// Decode input parameters
-	inputs := make([]string, len(req.Execution.Inputs))
-	for i, input := range req.Execution.Inputs {
-		decoded, err := base64.StdEncoding.DecodeString(input)
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode input %d: %v", i, err)
-		}
-		inputs[i] = string(decoded)
 	}
 
 	// Execute DTVM (pass the entire execution object)
