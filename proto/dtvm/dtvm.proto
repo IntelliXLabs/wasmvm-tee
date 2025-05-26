@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package dtvm;
+
+option go_package = "github.com/IntelliXLabs/dtvm-tee/proto/dtvm";
+
+// DTVMExecution represents a DTVM execution request containing
+// the bytecode and input parameters to be executed in TEE environment
+message DTVMExecution {
+  string version = 1;         // Protocol version
+  string request_id = 2;      // Unique request identifier
+  string bytecode = 3;        // DTVM bytecode (base64 encoded)
+  string fn_name = 4;         // Function name to execute
+  repeated string inputs = 5; // Input parameters (base64 encoded)
+  int64 timestamp = 6;        // Timestamp of the execution request
+}
+
+// DTVMRuntimeConfig defines the runtime configuration for DTVM execution
+message DTVMRuntimeConfig {
+  DTVMMode mode = 1;            // Execution mode (interpreter/compiler)
+  GasLimitConfig gas_limit = 2; // Gas limit configuration
+}
+
+// DTVMMode defines the execution mode for DTVM
+// Corresponds to int32_t _mode: 0: interp, 1: singlepass, 2: multipass
+enum DTVMMode {
+  DTVM_MODE_INTERP_UNSPECIFIED = 0; // Unspecified/Default interpreter mode
+  DTVM_MODE_SINGLEPASS = 1;         // Single-pass compilation mode
+  DTVM_MODE_MULTIPASS = 2;          // Multi-pass compilation mode
+}
+
+// GasLimitConfig controls gas consumption limits during execution
+message GasLimitConfig {
+  bool use_gas_limit = 1; // Whether to enable gas limiting
+  int64 limit = 2;        // Maximum gas units allowed (if enabled)
+}
+
+// DTVMExecutionResult contains the complete execution result
+// including inputs, outputs, hashes, and TEE attestation data
+message DTVMExecutionResult {
+  repeated string inputs = 1; // Original input parameters (base64 encoded)
+  repeated Value output_values = 3; // Execution output values
+  string attestation = 5;           // TEE attestation report (JSON string)
+  string report_data = 6; // TEE report data (hex encoded), hash(inputs+outputs)
+}
+
+// Value represents a typed value returned from DTVM execution
+// Wraps ZenValueExtern with type information
+message Value {
+  ValueType type = 1; // Type of the value
+  oneof value {
+    int32 int32_value = 2;    // 32-bit signed integer
+    int64 int64_value = 3;    // 64-bit signed integer
+    float float32_value = 4;  // 32-bit floating point
+    double float64_value = 5; // 64-bit floating point
+  }
+}
+
+// ValueType enumerates the supported value types in DTVM
+enum ValueType {
+  VALUE_TYPE_UNSPECIFIED = 0; // Unspecified type
+  VALUE_TYPE_INT32 = 1;       // 32-bit signed integer
+  VALUE_TYPE_INT64 = 2;       // 64-bit signed integer
+  VALUE_TYPE_FLOAT32 = 3;     // 32-bit floating point
+  VALUE_TYPE_FLOAT64 = 4;     // 64-bit floating point
+}
+
+// DTVMExecutionRequest combines execution parameters and runtime configuration
+message DTVMExecutionRequest {
+  DTVMExecution execution = 1; // Execution parameters (bytecode, inputs)
+  DTVMRuntimeConfig runtime_config =
+      2; // Runtime configuration (mode, gas limit)
+}
+
+// DTVMExecutionResponse contains the execution result with request tracking
+message DTVMExecutionResponse {
+  string request_id = 1;          // Request identifier for tracking
+  DTVMExecutionResult result = 2; // Complete execution result
+}
+
+service DTVMTeeService {
+  rpc Execute(DTVMExecutionRequest) returns (DTVMExecutionResponse);
+}
