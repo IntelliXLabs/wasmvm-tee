@@ -6,9 +6,10 @@ import (
 	"log"
 	"net"
 
-	"github.com/IntelliXLabs/dtvm-tee/dtvm"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	"github.com/IntelliXLabs/dtvm-tee/dtvm"
 )
 
 func main() {

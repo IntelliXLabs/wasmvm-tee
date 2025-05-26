@@ -15,7 +15,7 @@ clean:
 # Build the project
 build:
 	@echo "Building SEV-SNP server..."
-	go build -o bin/sev_snp_server cmd/sev_snp_server/main.go
+	CGO_ENABLED=1 go build -o bin/sev_snp_server cmd/sev_snp_server/main.go
 	@echo "Build completed!"
 
 # Run tests
@@ -54,3 +54,8 @@ help:
 	@echo "  proto-lint   - Lint proto files"
 	@echo "  deps         - Install dependencies"
 	@echo "  help         - Show this help message" 
+
+lint-imports:
+	@find . -name "*.go" -not -path "./vendor/*" -not -path "./.git/*" | while read -r file; do \
+		goimports-reviser -company-prefixes github.com/IntelliXLabs -rm-unused -format "$$file"; \
+	done
