@@ -13,10 +13,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/IntelliXLabs/dtvm-tee/dtvm"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/IntelliXLabs/dtvm-tee/dtvm"
 )
 
 var (

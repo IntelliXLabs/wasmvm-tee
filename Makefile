@@ -20,6 +20,7 @@ clean:
 build:
 	@echo "Building SEV-SNP server..."
 	CGO_ENABLED=1 go build -o bin/sev_snp_server cmd/sev_snp_server/main.go
+	CGO_ENABLED=1 go build -o bin/sev_snp_client cmd/sev_snp_client/main.go
 	@echo "Build completed!"
 
 # Run tests
