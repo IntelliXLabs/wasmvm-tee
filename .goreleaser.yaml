@@ -51,6 +51,15 @@ snapshot:
 
 changelog:
   use: git
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+      - "^style:"
+      - merge
 
 release:
   github:
@@ -97,16 +106,3 @@ release:
     ```
 
     **Full Changelog**: https://github.com/IntelliXLabs/dtvm-tee/compare/{{ .PreviousTag }}...{{ .Tag }}
-
-# Disable features we don't need
-dockers:
-  - skip_push: true
-
-snapcrafts:
-  - skip_publish: true
-
-brews:
-  - skip_upload: true
-
-nfpms:
-  - skip_upload: true
