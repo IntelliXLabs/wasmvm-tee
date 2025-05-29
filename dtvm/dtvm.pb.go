@@ -2,11 +2,12 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: dtvm/dtvm.proto
+// source: proto/dtvm/dtvm.proto
 
 package dtvm
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -56,11 +57,11 @@ func (x DTVMMode) String() string {
 }
 
 func (DTVMMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_dtvm_dtvm_proto_enumTypes[0].Descriptor()
+	return file_proto_dtvm_dtvm_proto_enumTypes[0].Descriptor()
 }
 
 func (DTVMMode) Type() protoreflect.EnumType {
-	return &file_dtvm_dtvm_proto_enumTypes[0]
+	return &file_proto_dtvm_dtvm_proto_enumTypes[0]
 }
 
 func (x DTVMMode) Number() protoreflect.EnumNumber {
@@ -69,7 +70,7 @@ func (x DTVMMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DTVMMode.Descriptor instead.
 func (DTVMMode) EnumDescriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{0}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{0}
 }
 
 // ValueType enumerates the supported value types in DTVM
@@ -112,11 +113,11 @@ func (x ValueType) String() string {
 }
 
 func (ValueType) Descriptor() protoreflect.EnumDescriptor {
-	return file_dtvm_dtvm_proto_enumTypes[1].Descriptor()
+	return file_proto_dtvm_dtvm_proto_enumTypes[1].Descriptor()
 }
 
 func (ValueType) Type() protoreflect.EnumType {
-	return &file_dtvm_dtvm_proto_enumTypes[1]
+	return &file_proto_dtvm_dtvm_proto_enumTypes[1]
 }
 
 func (x ValueType) Number() protoreflect.EnumNumber {
@@ -125,7 +126,7 @@ func (x ValueType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ValueType.Descriptor instead.
 func (ValueType) EnumDescriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{1}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{1}
 }
 
 // DTVMExecution represents a DTVM execution request containing
@@ -144,7 +145,7 @@ type DTVMExecution struct {
 
 func (x *DTVMExecution) Reset() {
 	*x = DTVMExecution{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[0]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -156,7 +157,7 @@ func (x *DTVMExecution) String() string {
 func (*DTVMExecution) ProtoMessage() {}
 
 func (x *DTVMExecution) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[0]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -169,7 +170,7 @@ func (x *DTVMExecution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DTVMExecution.ProtoReflect.Descriptor instead.
 func (*DTVMExecution) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{0}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DTVMExecution) GetVersion() string {
@@ -225,7 +226,7 @@ type DTVMRuntimeConfig struct {
 
 func (x *DTVMRuntimeConfig) Reset() {
 	*x = DTVMRuntimeConfig{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[1]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -237,7 +238,7 @@ func (x *DTVMRuntimeConfig) String() string {
 func (*DTVMRuntimeConfig) ProtoMessage() {}
 
 func (x *DTVMRuntimeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[1]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -250,7 +251,7 @@ func (x *DTVMRuntimeConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DTVMRuntimeConfig.ProtoReflect.Descriptor instead.
 func (*DTVMRuntimeConfig) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{1}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DTVMRuntimeConfig) GetMode() DTVMMode {
@@ -278,7 +279,7 @@ type GasLimitConfig struct {
 
 func (x *GasLimitConfig) Reset() {
 	*x = GasLimitConfig{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[2]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -290,7 +291,7 @@ func (x *GasLimitConfig) String() string {
 func (*GasLimitConfig) ProtoMessage() {}
 
 func (x *GasLimitConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[2]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -303,7 +304,7 @@ func (x *GasLimitConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GasLimitConfig.ProtoReflect.Descriptor instead.
 func (*GasLimitConfig) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{2}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GasLimitConfig) GetUseGasLimit() bool {
@@ -334,7 +335,7 @@ type DTVMExecutionResult struct {
 
 func (x *DTVMExecutionResult) Reset() {
 	*x = DTVMExecutionResult{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[3]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -346,7 +347,7 @@ func (x *DTVMExecutionResult) String() string {
 func (*DTVMExecutionResult) ProtoMessage() {}
 
 func (x *DTVMExecutionResult) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[3]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +360,7 @@ func (x *DTVMExecutionResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DTVMExecutionResult.ProtoReflect.Descriptor instead.
 func (*DTVMExecutionResult) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{3}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DTVMExecutionResult) GetInputs() []string {
@@ -408,7 +409,7 @@ type Value struct {
 
 func (x *Value) Reset() {
 	*x = Value{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[4]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -420,7 +421,7 @@ func (x *Value) String() string {
 func (*Value) ProtoMessage() {}
 
 func (x *Value) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[4]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -433,7 +434,7 @@ func (x *Value) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Value.ProtoReflect.Descriptor instead.
 func (*Value) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{4}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Value) GetType() ValueType {
@@ -525,7 +526,7 @@ type DTVMExecutionRequest struct {
 
 func (x *DTVMExecutionRequest) Reset() {
 	*x = DTVMExecutionRequest{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[5]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -537,7 +538,7 @@ func (x *DTVMExecutionRequest) String() string {
 func (*DTVMExecutionRequest) ProtoMessage() {}
 
 func (x *DTVMExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[5]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +551,7 @@ func (x *DTVMExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DTVMExecutionRequest.ProtoReflect.Descriptor instead.
 func (*DTVMExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{5}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DTVMExecutionRequest) GetExecution() *DTVMExecution {
@@ -578,7 +579,7 @@ type DTVMExecutionResponse struct {
 
 func (x *DTVMExecutionResponse) Reset() {
 	*x = DTVMExecutionResponse{}
-	mi := &file_dtvm_dtvm_proto_msgTypes[6]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -590,7 +591,7 @@ func (x *DTVMExecutionResponse) String() string {
 func (*DTVMExecutionResponse) ProtoMessage() {}
 
 func (x *DTVMExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_dtvm_dtvm_proto_msgTypes[6]
+	mi := &file_proto_dtvm_dtvm_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -603,7 +604,7 @@ func (x *DTVMExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DTVMExecutionResponse.ProtoReflect.Descriptor instead.
 func (*DTVMExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_dtvm_dtvm_proto_rawDescGZIP(), []int{6}
+	return file_proto_dtvm_dtvm_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DTVMExecutionResponse) GetRequestId() string {
@@ -620,11 +621,11 @@ func (x *DTVMExecutionResponse) GetResult() *DTVMExecutionResult {
 	return nil
 }
 
-var File_dtvm_dtvm_proto protoreflect.FileDescriptor
+var File_proto_dtvm_dtvm_proto protoreflect.FileDescriptor
 
-const file_dtvm_dtvm_proto_rawDesc = "" +
+const file_proto_dtvm_dtvm_proto_rawDesc = "" +
 	"\n" +
-	"\x0fdtvm/dtvm.proto\x12\x04dtvm\"\xb3\x01\n" +
+	"\x15proto/dtvm/dtvm.proto\x12\x04dtvm\x1a\x1cgoogle/api/annotations.proto\"\xb3\x01\n" +
 	"\rDTVMExecution\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1d\n" +
 	"\n" +
@@ -670,26 +671,25 @@ const file_dtvm_dtvm_proto_rawDesc = "" +
 	"\x10VALUE_TYPE_INT32\x10\x01\x12\x14\n" +
 	"\x10VALUE_TYPE_INT64\x10\x02\x12\x16\n" +
 	"\x12VALUE_TYPE_FLOAT32\x10\x03\x12\x16\n" +
-	"\x12VALUE_TYPE_FLOAT64\x10\x042T\n" +
-	"\x0eDTVMTeeService\x12B\n" +
-	"\aExecute\x12\x1a.dtvm.DTVMExecutionRequest\x1a\x1b.dtvm.DTVMExecutionResponseBl\n" +
-	"\bcom.dtvmB\tDtvmProtoP\x01Z%github.com/IntelliXLabs/dtvm-tee/dtvm\xa2\x02\x03DXX\xaa\x02\x04Dtvm\xca\x02\x04Dtvm\xe2\x02\x10Dtvm\\GPBMetadata\xea\x02\x04Dtvmb\x06proto3"
+	"\x12VALUE_TYPE_FLOAT64\x10\x042q\n" +
+	"\x0eDTVMTeeService\x12_\n" +
+	"\aExecute\x12\x1a.dtvm.DTVMExecutionRequest\x1a\x1b.dtvm.DTVMExecutionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/dtvm/executeB'Z%github.com/IntelliXLabs/dtvm-tee/dtvmb\x06proto3"
 
 var (
-	file_dtvm_dtvm_proto_rawDescOnce sync.Once
-	file_dtvm_dtvm_proto_rawDescData []byte
+	file_proto_dtvm_dtvm_proto_rawDescOnce sync.Once
+	file_proto_dtvm_dtvm_proto_rawDescData []byte
 )
 
-func file_dtvm_dtvm_proto_rawDescGZIP() []byte {
-	file_dtvm_dtvm_proto_rawDescOnce.Do(func() {
-		file_dtvm_dtvm_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_dtvm_dtvm_proto_rawDesc), len(file_dtvm_dtvm_proto_rawDesc)))
+func file_proto_dtvm_dtvm_proto_rawDescGZIP() []byte {
+	file_proto_dtvm_dtvm_proto_rawDescOnce.Do(func() {
+		file_proto_dtvm_dtvm_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_dtvm_dtvm_proto_rawDesc), len(file_proto_dtvm_dtvm_proto_rawDesc)))
 	})
-	return file_dtvm_dtvm_proto_rawDescData
+	return file_proto_dtvm_dtvm_proto_rawDescData
 }
 
-var file_dtvm_dtvm_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_dtvm_dtvm_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_dtvm_dtvm_proto_goTypes = []any{
+var file_proto_dtvm_dtvm_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_proto_dtvm_dtvm_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_dtvm_dtvm_proto_goTypes = []any{
 	(DTVMMode)(0),                 // 0: dtvm.DTVMMode
 	(ValueType)(0),                // 1: dtvm.ValueType
 	(*DTVMExecution)(nil),         // 2: dtvm.DTVMExecution
@@ -700,7 +700,7 @@ var file_dtvm_dtvm_proto_goTypes = []any{
 	(*DTVMExecutionRequest)(nil),  // 7: dtvm.DTVMExecutionRequest
 	(*DTVMExecutionResponse)(nil), // 8: dtvm.DTVMExecutionResponse
 }
-var file_dtvm_dtvm_proto_depIdxs = []int32{
+var file_proto_dtvm_dtvm_proto_depIdxs = []int32{
 	0, // 0: dtvm.DTVMRuntimeConfig.mode:type_name -> dtvm.DTVMMode
 	4, // 1: dtvm.DTVMRuntimeConfig.gas_limit:type_name -> dtvm.GasLimitConfig
 	6, // 2: dtvm.DTVMExecutionResult.output_values:type_name -> dtvm.Value
@@ -717,12 +717,12 @@ var file_dtvm_dtvm_proto_depIdxs = []int32{
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_dtvm_dtvm_proto_init() }
-func file_dtvm_dtvm_proto_init() {
-	if File_dtvm_dtvm_proto != nil {
+func init() { file_proto_dtvm_dtvm_proto_init() }
+func file_proto_dtvm_dtvm_proto_init() {
+	if File_proto_dtvm_dtvm_proto != nil {
 		return
 	}
-	file_dtvm_dtvm_proto_msgTypes[4].OneofWrappers = []any{
+	file_proto_dtvm_dtvm_proto_msgTypes[4].OneofWrappers = []any{
 		(*Value_Int32Value)(nil),
 		(*Value_Int64Value)(nil),
 		(*Value_Float32Value)(nil),
@@ -732,18 +732,18 @@ func file_dtvm_dtvm_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_dtvm_dtvm_proto_rawDesc), len(file_dtvm_dtvm_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_dtvm_dtvm_proto_rawDesc), len(file_proto_dtvm_dtvm_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_dtvm_dtvm_proto_goTypes,
-		DependencyIndexes: file_dtvm_dtvm_proto_depIdxs,
-		EnumInfos:         file_dtvm_dtvm_proto_enumTypes,
-		MessageInfos:      file_dtvm_dtvm_proto_msgTypes,
+		GoTypes:           file_proto_dtvm_dtvm_proto_goTypes,
+		DependencyIndexes: file_proto_dtvm_dtvm_proto_depIdxs,
+		EnumInfos:         file_proto_dtvm_dtvm_proto_enumTypes,
+		MessageInfos:      file_proto_dtvm_dtvm_proto_msgTypes,
 	}.Build()
-	File_dtvm_dtvm_proto = out.File
-	file_dtvm_dtvm_proto_goTypes = nil
-	file_dtvm_dtvm_proto_depIdxs = nil
+	File_proto_dtvm_dtvm_proto = out.File
+	file_proto_dtvm_dtvm_proto_goTypes = nil
+	file_proto_dtvm_dtvm_proto_depIdxs = nil
 }

@@ -1,0 +1,38 @@
+name: Lint Go Imports
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  lint-imports:
+    name: Lint Go Imports
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2'
+        
+    - name: Install goimports-reviser
+      run: go install github.com/incu6us/goimports-reviser/v3@latest
+      
+    - name: Run lint-imports
+      run: make lint-imports
+      
+    - name: Check for changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "Import formatting changes detected:"
+          git diff
+          echo "Please run 'make lint-imports' locally and commit the changes."
+          exit 1
+        else
+          echo "No import formatting changes needed."
+        fi 

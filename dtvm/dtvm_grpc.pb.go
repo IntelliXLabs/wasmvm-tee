@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: dtvm/dtvm.proto
+// source: proto/dtvm/dtvm.proto
 
 package dtvm
 
@@ -117,5 +117,5 @@ var DTVMTeeService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "dtvm/dtvm.proto",
+	Metadata: "proto/dtvm/dtvm.proto",
 }

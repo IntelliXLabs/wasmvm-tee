@@ -1,9 +1,13 @@
 .PHONY: proto clean build test help
 
-# Generate protobuf files
+# Generate protobuf files including grpc-gateway
 proto:
-	@echo "Generating protobuf files..."
-	buf generate proto
+	@echo "Generating protobuf files with buf..."
+	buf generate
+	@echo "Moving generated files to correct location..."
+	@if [ -f proto/dtvm/dtvm.pb.go ]; then mv proto/dtvm/*.pb.go dtvm/; fi
+	@if [ -f proto/dtvm/dtvm.pb.gw.go ]; then mv proto/dtvm/*.pb.gw.go dtvm/; fi
+	@if [ -f proto/dtvm/dtvm.swagger.json ]; then mv proto/dtvm/*.swagger.json dtvm/; fi
 	@echo "Protobuf files generated successfully!"
 
 # Clean generated files
@@ -16,6 +20,7 @@ clean:
 build:
 	@echo "Building SEV-SNP server..."
 	CGO_ENABLED=1 go build -o bin/sev_snp_server cmd/sev_snp_server/main.go
+	CGO_ENABLED=1 go build -o bin/sev_snp_client cmd/sev_snp_client/main.go
 	@echo "Build completed!"
 
 # Run tests

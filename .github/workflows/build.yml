@@ -1,0 +1,53 @@
+name: Build Check
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2'
+        
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        
+    - name: Install Go dependencies
+      run: make deps
+      
+    - name: Create bin directory
+      run: mkdir -p bin
+      
+    - name: Build project
+      run: make build
+      
+    - name: Verify build artifacts
+      run: |
+        if [ -f bin/sev_snp_server ]; then
+          echo "✅ sev_snp_server built successfully"
+          ls -la bin/sev_snp_server
+        else
+          echo "❌ sev_snp_server build failed"
+          exit 1
+        fi
+        
+        if [ -f bin/sev_snp_client ]; then
+          echo "✅ sev_snp_client built successfully"
+          ls -la bin/sev_snp_client
+        else
+          echo "❌ sev_snp_client build failed"
+          exit 1
+        fi 
