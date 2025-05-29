@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package dtvm;
 
-option go_package = "github.com/IntelliXLabs/dtvm-tee/proto/dtvm";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/IntelliXLabs/dtvm-tee/dtvm";
 
 // DTVMExecution represents a DTVM execution request containing
 // the bytecode and input parameters to be executed in TEE environment
@@ -79,5 +81,10 @@ message DTVMExecutionResponse {
 }
 
 service DTVMTeeService {
-  rpc Execute(DTVMExecutionRequest) returns (DTVMExecutionResponse);
+  rpc Execute(DTVMExecutionRequest) returns (DTVMExecutionResponse) {
+    option (google.api.http) = {
+      post : "/v1/dtvm/execute"
+      body : "*"
+    };
+  }
 }
