@@ -16,7 +16,6 @@ builds:
       - linux
     goarch:
       - amd64
-      - arm64
     flags:
       - -v
     ldflags:
@@ -33,7 +32,6 @@ archives:
       {{- .Version }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "arm64" }}aarch64
       {{- else }}{{ .Arch }}{{ end }}
     format: tar.gz
     builds:
@@ -71,11 +69,10 @@ release:
   header: |
     ## SEV-SNP Server Release {{ .Tag }}
 
-    This release contains the SEV-SNP server binary for Linux on multiple architectures.
+    This release contains the SEV-SNP server binary for Linux AMD64.
 
     ### Supported Architectures
     - **Linux AMD64 (x86_64)** - Intel/AMD 64-bit processors
-    - **Linux ARM64 (aarch64)** - ARM 64-bit processors
 
   footer: |
     ## Installation
@@ -85,15 +82,6 @@ release:
     # Download for x86_64
     wget https://github.com/IntelliXLabs/dtvm-tee/releases/download/{{ .Tag }}/sev_snp_server_{{ .Tag }}_Linux_x86_64.tar.gz
     tar -xzf sev_snp_server_{{ .Tag }}_Linux_x86_64.tar.gz
-    chmod +x sev_snp_server
-    ./sev_snp_server --help
-    ```
-
-    ### Quick Install (ARM64)
-    ```bash
-    # Download for aarch64
-    wget https://github.com/IntelliXLabs/dtvm-tee/releases/download/{{ .Tag }}/sev_snp_server_{{ .Tag }}_Linux_aarch64.tar.gz
-    tar -xzf sev_snp_server_{{ .Tag }}_Linux_aarch64.tar.gz
     chmod +x sev_snp_server
     ./sev_snp_server --help
     ```
