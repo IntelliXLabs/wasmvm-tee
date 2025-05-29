@@ -1,0 +1,112 @@
+# GoReleaser configuration for sev_snp_server
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod download
+
+builds:
+  - id: sev_snp_server
+    main: ./cmd/sev_snp_server
+    binary: sev_snp_server
+    env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -v
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+      - -X main.builtBy=goreleaser
+
+archives:
+  - id: sev_snp_server_archive
+    name_template: >-
+      sev_snp_server_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "arm64" }}aarch64
+      {{- else }}{{ .Arch }}{{ end }}
+    format: tar.gz
+    builds:
+      - sev_snp_server
+    files:
+      - README.md
+      - LICENSE*
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  use: git
+
+release:
+  github:
+    owner: IntelliXLabs
+    name: dtvm-tee
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## SEV-SNP Server Release {{ .Tag }}
+
+    This release contains the SEV-SNP server binary for Linux on multiple architectures.
+
+    ### Supported Architectures
+    - **Linux AMD64 (x86_64)** - Intel/AMD 64-bit processors
+    - **Linux ARM64 (aarch64)** - ARM 64-bit processors
+
+  footer: |
+    ## Installation
+
+    ### Quick Install (AMD64)
+    ```bash
+    # Download for x86_64
+    wget https://github.com/IntelliXLabs/dtvm-tee/releases/download/{{ .Tag }}/sev_snp_server_{{ .Tag }}_Linux_x86_64.tar.gz
+    tar -xzf sev_snp_server_{{ .Tag }}_Linux_x86_64.tar.gz
+    chmod +x sev_snp_server
+    ./sev_snp_server --help
+    ```
+
+    ### Quick Install (ARM64)
+    ```bash
+    # Download for aarch64
+    wget https://github.com/IntelliXLabs/dtvm-tee/releases/download/{{ .Tag }}/sev_snp_server_{{ .Tag }}_Linux_aarch64.tar.gz
+    tar -xzf sev_snp_server_{{ .Tag }}_Linux_aarch64.tar.gz
+    chmod +x sev_snp_server
+    ./sev_snp_server --help
+    ```
+
+    ### Verify Download
+    ```bash
+    # Download and verify checksums
+    wget https://github.com/IntelliXLabs/dtvm-tee/releases/download/{{ .Tag }}/checksums.txt
+    sha256sum -c checksums.txt
+    ```
+
+    **Full Changelog**: https://github.com/IntelliXLabs/dtvm-tee/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+# Disable features we don't need
+dockers:
+  - skip_push: true
+
+snapcrafts:
+  - skip_publish: true
+
+brews:
+  - skip_upload: true
+
+nfpms:
+  - skip_upload: true
