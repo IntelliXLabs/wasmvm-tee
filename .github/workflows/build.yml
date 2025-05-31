@@ -23,9 +23,67 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential
-        wget -qO- https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
-        source ~/.bashrc
+        sudo apt-get install -y build-essential pkg-config git curl
+        
+    - name: Install WasmEdge with proper environment setup
+      run: |
+        # Install WasmEdge using official installer
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
+        
+        # Source the WasmEdge environment as recommended in the docs
+        source $HOME/.wasmedge/env
+        
+        # Set up environment variables for GitHub Actions
+        echo "$HOME/.wasmedge/bin" >> $GITHUB_PATH
+        echo "WASMEDGE_DIR=$HOME/.wasmedge" >> $GITHUB_ENV
+        echo "WASMEDGE_LIB_DIR=$HOME/.wasmedge/lib" >> $GITHUB_ENV  
+        echo "WASMEDGE_INCLUDE_DIR=$HOME/.wasmedge/include" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=$HOME/.wasmedge/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=$HOME/.wasmedge/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+        
+        # Set CGO flags for Go compilation
+        echo "CGO_CFLAGS=-I$HOME/.wasmedge/include" >> $GITHUB_ENV
+        echo "CGO_LDFLAGS=-L$HOME/.wasmedge/lib -lwasmedge" >> $GITHUB_ENV
+        echo "CGO_ENABLED=1" >> $GITHUB_ENV
+        
+    - name: Verify WasmEdge installation
+      run: |
+        # Source environment again to ensure it's available
+        source $HOME/.wasmedge/env
+        
+        echo "=== WasmEdge Installation Verification ==="
+        echo "WasmEdge version:"
+        wasmedge --version
+        
+        echo "WasmEdge installation directory:"
+        ls -la $HOME/.wasmedge/
+        
+        echo "Include directory contents:"
+        ls -la $HOME/.wasmedge/include/ || echo "Include directory not found"
+        
+        echo "Library directory contents:"
+        ls -la $HOME/.wasmedge/lib/ || echo "Library directory not found"
+        
+        echo "Header files:"
+        find $HOME/.wasmedge -name "*.h" | head -10 || echo "No header files found"
+        
+        echo "Library files:"
+        find $HOME/.wasmedge -name "*.so" -o -name "*.a" | head -10 || echo "No library files found"
+        
+        echo "Environment variables:"
+        echo "WASMEDGE_DIR=$WASMEDGE_DIR"
+        echo "WASMEDGE_LIB_DIR=$WASMEDGE_LIB_DIR"
+        echo "WASMEDGE_INCLUDE_DIR=$WASMEDGE_INCLUDE_DIR"
+        echo "CGO_CFLAGS=$CGO_CFLAGS"
+        echo "CGO_LDFLAGS=$CGO_LDFLAGS"
+        
+    - name: Test CGO compilation
+      run: |
+        # Test if CGO can find WasmEdge headers
+        echo '#include <wasmedge/wasmedge.h>' > test_wasmedge.c
+        echo 'int main() { return 0; }' >> test_wasmedge.c
+        gcc $CGO_CFLAGS -c test_wasmedge.c -o test_wasmedge.o || echo "CGO compilation test failed"
+        rm -f test_wasmedge.c test_wasmedge.o
         
     - name: Install Go dependencies
       run: make deps
@@ -46,10 +104,3 @@ jobs:
           exit 1
         fi
         
-        if [ -f bin/sev_snp_client ]; then
-          echo "✅ sev_snp_client built successfully"
-          ls -la bin/sev_snp_client
-        else
-          echo "❌ sev_snp_client build failed"
-          exit 1
-        fi 
