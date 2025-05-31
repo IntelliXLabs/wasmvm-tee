@@ -88,16 +88,24 @@ jobs:
             # Source WasmEdge environment and make it permanent
             source \$HOME/.wasmedge/env
             
-            # Add WasmEdge environment to system-wide profile
+            # Create WasmEdge environment file using echo
             echo 'Configuring WasmEdge environment...'
-            sudo tee /etc/profile.d/wasmedge.sh > /dev/null << 'EOL'
+            sudo bash -c 'cat > /etc/profile.d/wasmedge.sh' << 'EOF'
             #!/bin/bash
-            export WASMEDGE_DIR=\$HOME/.wasmedge
+            # WasmEdge environment configuration
+            WASMEDGE_USER_HOME=\$(eval echo ~\$SUDO_USER)
+            if [ -z \"\$WASMEDGE_USER_HOME\" ]; then
+                WASMEDGE_USER_HOME=\$HOME
+            fi
+            export WASMEDGE_DIR=\$WASMEDGE_USER_HOME/.wasmedge
             export PATH=\$WASMEDGE_DIR/bin:\$PATH
             export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH
             export DYLD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$DYLD_LIBRARY_PATH
             export PKG_CONFIG_PATH=\$WASMEDGE_DIR/lib/pkgconfig:\$PKG_CONFIG_PATH
-            EOL
+            EOF
+            
+            # Make the environment file executable
+            sudo chmod +x /etc/profile.d/wasmedge.sh
             
             # Source the environment for current session
             source /etc/profile.d/wasmedge.sh
@@ -181,8 +189,6 @@ jobs:
             # Start the process with proper environment variables
             sudo bash -c '
             source /etc/profile.d/wasmedge.sh
-            export WASMEDGE_DIR=\$HOME/.wasmedge
-            export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH
             echo \"Starting with LD_LIBRARY_PATH: \$LD_LIBRARY_PATH\"
             nohup /usr/local/bin/${{ env.APP_NAME }} >> /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 & 
             echo \$! > /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid
