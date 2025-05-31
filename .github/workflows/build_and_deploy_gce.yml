@@ -75,10 +75,38 @@ jobs:
           --command="
             echo '--- Starting deployment on GCE instance ---'
             
-            sudo apt-get update && sudo apt-get install -y curl build-essential pkg-config git
-            curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
-            source $HOME/.wasmedge/env
+            # Install WasmEdge on GCE instance if not already installed
+            echo 'Setting up WasmEdge runtime environment...'
+            if [ ! -f \"\$HOME/.wasmedge/bin/wasmedge\" ]; then
+              echo 'Installing WasmEdge...'
+              sudo apt-get update && sudo apt-get install -y curl build-essential pkg-config git
+              curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
+            else
+              echo 'WasmEdge already installed'
+            fi
+            
+            # Source WasmEdge environment and make it permanent
+            source \$HOME/.wasmedge/env
+            
+            # Add WasmEdge environment to system-wide profile
+            echo 'Configuring WasmEdge environment...'
+            sudo tee /etc/profile.d/wasmedge.sh > /dev/null << 'EOL'
 
+            export WASMEDGE_DIR=\$HOME/.wasmedge
+            export PATH=\$WASMEDGE_DIR/bin:\$PATH
+            export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH
+            export DYLD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$DYLD_LIBRARY_PATH
+            export PKG_CONFIG_PATH=\$WASMEDGE_DIR/lib/pkgconfig:\$PKG_CONFIG_PATH
+
+            
+            # Source the environment for current session
+            source /etc/profile.d/wasmedge.sh
+            
+            # Verify WasmEdge installation
+            echo 'Verifying WasmEdge installation...'
+            wasmedge --version || echo 'WasmEdge command not found'
+            echo \"LD_LIBRARY_PATH: \$LD_LIBRARY_PATH\"
+            ls -la \$HOME/.wasmedge/lib/ | grep libwasmedge || echo 'libwasmedge.so not found'
 
             # Create a more precise process check using exact binary path
             echo 'Checking for existing ${{ env.APP_NAME }} processes...'
@@ -127,6 +155,10 @@ jobs:
             sudo mv '${REMOTE_TEMP_PATH}' '${REMOTE_FINAL_PATH}'
             sudo chmod +x '${REMOTE_FINAL_PATH}'
             
+            # Test if the binary can find its dependencies
+            echo 'Testing binary dependencies...'
+            ldd '${REMOTE_FINAL_PATH}' || echo 'ldd check failed'
+            
             # Create log directory and set proper permissions
             echo 'Setting up directories and permissions...'
             sudo mkdir -p /var/log/${{ env.APP_NAME }}
@@ -137,7 +169,6 @@ jobs:
             sudo touch /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid
             
             # Set permissions - make directories and files writable by all users
-            # This ensures the process can write regardless of which user it runs as
             sudo chmod 755 /var/log/${{ env.APP_NAME }}
             sudo chmod 755 /var/run/${{ env.APP_NAME }}
             sudo chmod 666 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log
@@ -147,8 +178,15 @@ jobs:
             # Change to a safe directory before starting the process
             cd /tmp
             
-            # Start the process with nohup, using full paths for everything
-            sudo bash -c 'nohup /usr/local/bin/${{ env.APP_NAME }} >> /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 & echo \$! > /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid'
+            # Start the process with proper environment variables
+            sudo bash -c '
+            source /etc/profile.d/wasmedge.sh
+            export WASMEDGE_DIR=\$HOME/.wasmedge
+            export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH
+            echo \"Starting with LD_LIBRARY_PATH: \$LD_LIBRARY_PATH\"
+            nohup /usr/local/bin/${{ env.APP_NAME }} >> /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 & 
+            echo \$! > /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid
+            '
             
             # Wait a moment for the process to start
             sleep 3
