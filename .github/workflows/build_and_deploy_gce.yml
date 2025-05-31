@@ -75,24 +75,45 @@ jobs:
           --command="
             echo '--- Starting deployment on GCE instance ---'
             
-            # Check if there are existing processes running
+            # Create a more precise process check using exact binary path
             echo 'Checking for existing ${{ env.APP_NAME }} processes...'
-            EXISTING_PIDS=\$(pgrep -f '${{ env.APP_NAME }}' || true)
+            BINARY_PATH='/usr/local/bin/${{ env.APP_NAME }}'
+            
+            # Use a more specific pattern to find only our application processes
+            EXISTING_PIDS=\$(ps aux | grep \"\$BINARY_PATH\" | grep -v grep | awk '{print \$2}' || true)
             
             if [ ! -z \"\$EXISTING_PIDS\" ]; then
               echo 'Found existing processes with PIDs: '\$EXISTING_PIDS
-              echo 'Killing existing processes...'
-              sudo kill -TERM \$EXISTING_PIDS || true
-              sleep 3
+              echo 'Process details:'
+              ps aux | grep \"\$BINARY_PATH\" | grep -v grep || true
               
-              # Check if any processes still exist, force kill if necessary
-              REMAINING_PIDS=\$(pgrep -f '${{ env.APP_NAME }}' || true)
+              echo 'Attempting graceful shutdown...'
+              for pid in \$EXISTING_PIDS; do
+                if [ -d \"/proc/\$pid\" ]; then
+                  echo \"Sending TERM signal to PID \$pid\"
+                  sudo kill -TERM \$pid 2>/dev/null || echo \"Failed to send TERM to \$pid (may have already exited)\"
+                else
+                  echo \"PID \$pid no longer exists\"
+                fi
+              done
+              
+              # Wait for graceful shutdown
+              echo 'Waiting 5 seconds for graceful shutdown...'
+              sleep 5
+              
+              # Check for remaining processes
+              REMAINING_PIDS=\$(ps aux | grep \"\$BINARY_PATH\" | grep -v grep | awk '{print \$2}' || true)
               if [ ! -z \"\$REMAINING_PIDS\" ]; then
-                echo 'Some processes still running, force killing with SIGKILL...'
-                sudo kill -KILL \$REMAINING_PIDS || true
-                sleep 1
+                echo 'Some processes still running, force killing...'
+                for pid in \$REMAINING_PIDS; do
+                  if [ -d \"/proc/\$pid\" ]; then
+                    echo \"Force killing PID \$pid\"
+                    sudo kill -KILL \$pid 2>/dev/null || echo \"Failed to force kill \$pid\"
+                  fi
+                done
+                sleep 2
               fi
-              echo 'All existing processes terminated.'
+              echo 'Process cleanup completed.'
             else
               echo 'No existing processes found.'
             fi
@@ -105,24 +126,37 @@ jobs:
             sudo mkdir -p /var/log/${{ env.APP_NAME }}
             sudo chmod 755 /var/log/${{ env.APP_NAME }}
             
+            # Create a PID file directory
+            sudo mkdir -p /var/run/${{ env.APP_NAME }}
+            sudo chmod 755 /var/run/${{ env.APP_NAME }}
+            
             echo 'Starting ${{ env.APP_NAME }} with nohup...'
             # Use nohup to start the process, redirect output to log file
-            nohup sudo ${REMOTE_FINAL_PATH} > /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 &
+            # Also create a PID file for better process management
+            cd /var/run/${{ env.APP_NAME }}
+            sudo nohup ${REMOTE_FINAL_PATH} > /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 &
+            echo \$! | sudo tee /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid > /dev/null
             
-            # Get the PID of the newly started process
-            sleep 2
-            NEW_PID=\$(pgrep -f '${{ env.APP_NAME }}' || true)
+            # Wait a moment and verify the process started
+            sleep 3
             
-            if [ ! -z \"\$NEW_PID\" ]; then
-              echo '✅ ${{ env.APP_NAME }} started successfully with PID: '\$NEW_PID
-              echo 'Process info:'
-              ps aux | grep '${{ env.APP_NAME }}' | grep -v grep || true
-              
-              # Check if log file has content (optional)
-              echo 'Recent log output:'
-              sudo tail -10 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log output yet.'
+            # Check if PID file exists and process is running
+            if [ -f '/var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid' ]; then
+              NEW_PID=\$(sudo cat /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid)
+              if [ -d \"/proc/\$NEW_PID\" ]; then
+                echo '✅ ${{ env.APP_NAME }} started successfully with PID: '\$NEW_PID
+                echo 'Process info:'
+                ps aux | grep \"\$NEW_PID\" | grep -v grep || true
+                
+                # Check if log file has content
+                echo 'Recent log output:'
+                sudo tail -10 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log output yet.'
+              else
+                echo '❌ Process with PID '\$NEW_PID' is not running'
+                exit 1
+              fi
             else
-              echo '❌ Failed to start ${{ env.APP_NAME }}'
+              echo '❌ Failed to create PID file or start ${{ env.APP_NAME }}'
               echo 'Checking recent log output for errors:'
               sudo tail -20 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log file found.'
               exit 1
