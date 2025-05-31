@@ -75,6 +75,46 @@ jobs:
           --command="
             echo '--- Starting deployment on GCE instance ---'
             
+            # Install WasmEdge on GCE instance if not already installed
+            echo 'Setting up WasmEdge runtime environment...'
+            if [ ! -f \"\$HOME/.wasmedge/bin/wasmedge\" ]; then
+              echo 'Installing WasmEdge...'
+              sudo apt-get update && sudo apt-get install -y curl build-essential pkg-config git
+              curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
+            else
+              echo 'WasmEdge already installed'
+            fi
+            
+            # Source WasmEdge environment and make it permanent
+            source \$HOME/.wasmedge/env
+            
+            # Create WasmEdge environment file using echo commands
+            echo 'Configuring WasmEdge environment...'
+            sudo rm -f /etc/profile.d/wasmedge.sh
+            echo '#!/bin/bash' | sudo tee /etc/profile.d/wasmedge.sh
+            echo '# WasmEdge environment configuration' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'WASMEDGE_USER_HOME=\$(eval echo ~\$SUDO_USER)' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'if [ -z \"\$WASMEDGE_USER_HOME\" ]; then' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo '    WASMEDGE_USER_HOME=\$HOME' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'fi' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export WASMEDGE_DIR=\$WASMEDGE_USER_HOME/.wasmedge' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export PATH=\$WASMEDGE_DIR/bin:\$PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export DYLD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$DYLD_LIBRARY_PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export PKG_CONFIG_PATH=\$WASMEDGE_DIR/lib/pkgconfig:\$PKG_CONFIG_PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            
+            # Make the environment file executable
+            sudo chmod +x /etc/profile.d/wasmedge.sh
+            
+            # Source the environment for current session
+            source /etc/profile.d/wasmedge.sh
+            
+            # Verify WasmEdge installation
+            echo 'Verifying WasmEdge installation...'
+            wasmedge --version || echo 'WasmEdge command not found'
+            echo \"LD_LIBRARY_PATH: \$LD_LIBRARY_PATH\"
+            ls -la \$HOME/.wasmedge/lib/ | grep libwasmedge || echo 'libwasmedge.so not found'
+
             # Create a more precise process check using exact binary path
             echo 'Checking for existing ${{ env.APP_NAME }} processes...'
             BINARY_PATH='/usr/local/bin/${{ env.APP_NAME }}'
@@ -122,43 +162,83 @@ jobs:
             sudo mv '${REMOTE_TEMP_PATH}' '${REMOTE_FINAL_PATH}'
             sudo chmod +x '${REMOTE_FINAL_PATH}'
             
-            # Create log directory
-            sudo mkdir -p /var/log/${{ env.APP_NAME }}
-            sudo chmod 755 /var/log/${{ env.APP_NAME }}
+            # Test if the binary can find its dependencies
+            echo 'Testing binary dependencies...'
+            ldd '${REMOTE_FINAL_PATH}' || echo 'ldd check failed'
             
-            # Create a PID file directory
+            # Create log directory and set proper permissions
+            echo 'Setting up directories and permissions...'
+            sudo mkdir -p /var/log/${{ env.APP_NAME }}
             sudo mkdir -p /var/run/${{ env.APP_NAME }}
+            
+            # Create log file with proper permissions
+            sudo touch /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log
+            sudo touch /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid
+            
+            # Set permissions - make directories and files writable by all users
+            sudo chmod 755 /var/log/${{ env.APP_NAME }}
             sudo chmod 755 /var/run/${{ env.APP_NAME }}
+            sudo chmod 666 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log
+            sudo chmod 666 /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid
             
             echo 'Starting ${{ env.APP_NAME }} with nohup...'
-            # Use nohup to start the process, redirect output to log file
-            # Also create a PID file for better process management
-            cd /var/run/${{ env.APP_NAME }}
-            sudo nohup ${REMOTE_FINAL_PATH} > /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 &
-            echo \$! | sudo tee /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid > /dev/null
+            # Change to a safe directory before starting the process
+            cd /tmp
             
-            # Wait a moment and verify the process started
+            # Start the process with proper environment variables
+            sudo bash -c '
+            source /etc/profile.d/wasmedge.sh
+            echo \"Starting with LD_LIBRARY_PATH: \$LD_LIBRARY_PATH\"
+            nohup /usr/local/bin/${{ env.APP_NAME }} >> /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 & 
+            echo \$! > /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid
+            '
+            
+            # Wait a moment for the process to start
             sleep 3
             
-            # Check if PID file exists and process is running
-            if [ -f '/var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid' ]; then
-              NEW_PID=\$(sudo cat /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid)
+            # Check if PID file exists and has content
+            if [ -f '/var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid' ] && [ -s '/var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid' ]; then
+              NEW_PID=\$(cat /var/run/${{ env.APP_NAME }}/${{ env.APP_NAME }}.pid)
+              echo 'PID file contains: '\$NEW_PID
+              
+              # Verify the process is actually running
               if [ -d \"/proc/\$NEW_PID\" ]; then
-                echo '✅ ${{ env.APP_NAME }} started successfully with PID: '\$NEW_PID
-                echo 'Process info:'
-                ps aux | grep \"\$NEW_PID\" | grep -v grep || true
-                
-                # Check if log file has content
-                echo 'Recent log output:'
-                sudo tail -10 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log output yet.'
+                # Double check this is our process
+                PROC_CMD=\$(ps -p \$NEW_PID -o cmd --no-headers 2>/dev/null || echo '')
+                if echo \"\$PROC_CMD\" | grep -q '${{ env.APP_NAME }}'; then
+                  echo '✅ ${{ env.APP_NAME }} started successfully with PID: '\$NEW_PID
+                  echo 'Process command: '\$PROC_CMD
+                  
+                  # Check if log file has content
+                  echo 'Recent log output:'
+                  tail -10 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log output yet.'
+                  
+                  # Check if the process is listening on expected ports (optional)
+                  echo 'Network connections:'
+                  sudo netstat -tulpn | grep \$NEW_PID || echo 'No network connections found for this process.'
+                else
+                  echo '❌ Process with PID '\$NEW_PID' is not our application'
+                  echo 'Process command: '\$PROC_CMD
+                  exit 1
+                fi
               else
                 echo '❌ Process with PID '\$NEW_PID' is not running'
+                echo 'Checking recent log output for errors:'
+                tail -20 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log content found.'
                 exit 1
               fi
             else
-              echo '❌ Failed to create PID file or start ${{ env.APP_NAME }}'
+              echo '❌ PID file not created or empty'
+              echo 'Checking if process started without PID file...'
+              MANUAL_CHECK=\$(ps aux | grep '/usr/local/bin/${{ env.APP_NAME }}' | grep -v grep || true)
+              if [ ! -z \"\$MANUAL_CHECK\" ]; then
+                echo 'Process seems to be running:'
+                echo \"\$MANUAL_CHECK\"
+              else
+                echo 'No process found running.'
+              fi
               echo 'Checking recent log output for errors:'
-              sudo tail -20 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log file found.'
+              tail -20 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log file found.'
               exit 1
             fi
             
