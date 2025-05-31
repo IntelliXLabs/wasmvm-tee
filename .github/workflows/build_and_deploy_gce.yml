@@ -88,21 +88,20 @@ jobs:
             # Source WasmEdge environment and make it permanent
             source \$HOME/.wasmedge/env
             
-            # Create WasmEdge environment file using echo
+            # Create WasmEdge environment file using echo commands
             echo 'Configuring WasmEdge environment...'
-            sudo bash -c 'cat > /etc/profile.d/wasmedge.sh' << 'EOF'
-            #!/bin/bash
-            # WasmEdge environment configuration
-            WASMEDGE_USER_HOME=\$(eval echo ~\$SUDO_USER)
-            if [ -z \"\$WASMEDGE_USER_HOME\" ]; then
-                WASMEDGE_USER_HOME=\$HOME
-            fi
-            export WASMEDGE_DIR=\$WASMEDGE_USER_HOME/.wasmedge
-            export PATH=\$WASMEDGE_DIR/bin:\$PATH
-            export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH
-            export DYLD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$DYLD_LIBRARY_PATH
-            export PKG_CONFIG_PATH=\$WASMEDGE_DIR/lib/pkgconfig:\$PKG_CONFIG_PATH
-            EOF
+            sudo rm -f /etc/profile.d/wasmedge.sh
+            echo '#!/bin/bash' | sudo tee /etc/profile.d/wasmedge.sh
+            echo '# WasmEdge environment configuration' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'WASMEDGE_USER_HOME=\$(eval echo ~\$SUDO_USER)' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'if [ -z \"\$WASMEDGE_USER_HOME\" ]; then' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo '    WASMEDGE_USER_HOME=\$HOME' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'fi' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export WASMEDGE_DIR=\$WASMEDGE_USER_HOME/.wasmedge' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export PATH=\$WASMEDGE_DIR/bin:\$PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export DYLD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$DYLD_LIBRARY_PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
+            echo 'export PKG_CONFIG_PATH=\$WASMEDGE_DIR/lib/pkgconfig:\$PKG_CONFIG_PATH' | sudo tee -a /etc/profile.d/wasmedge.sh
             
             # Make the environment file executable
             sudo chmod +x /etc/profile.d/wasmedge.sh
