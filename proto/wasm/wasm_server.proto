@@ -3,7 +3,7 @@ syntax = "proto3";
 package wasm;
 
 import "google/api/annotations.proto";
-import "proto/wasm/wasm_input.proto";
+import "wasm/wasm_input.proto";
 
 option go_package = "github.com/IntelliXLabs/wasmvm-tee/wasm";
 

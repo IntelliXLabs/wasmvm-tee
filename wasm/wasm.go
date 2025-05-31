@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/second-state/WasmEdge-go/wasmedge"
 	bindgen "github.com/second-state/wasmedge-bindgen/host/go"
@@ -12,6 +11,58 @@ import (
 
 type host struct {
 	fetchResult []byte
+}
+
+// ExecuteWasm executes WebAssembly code and returns proto Value structures
+func ExecuteWasm(wasmCode []byte, fnName string, params []any) ([]any, error) {
+	wasmedge.SetLogErrorLevel()
+
+	conf := wasmedge.NewConfigure(wasmedge.WASI)
+	defer conf.Release()
+
+	vm := wasmedge.NewVMWithConfig(conf)
+	defer vm.Release()
+
+	obj := wasmedge.NewModule("env")
+	defer obj.Release()
+
+	h := host{}
+	// Add host functions into the module instance
+	funcFetchType := wasmedge.NewFunctionType(
+		[]*wasmedge.ValType{
+			wasmedge.NewValTypeI32(),
+			wasmedge.NewValTypeI32(),
+		},
+		[]*wasmedge.ValType{
+			wasmedge.NewValTypeI32(),
+		})
+
+	hostFetch := wasmedge.NewFunction(funcFetchType, h.fetch, nil, 0)
+	obj.AddFunction("fetch", hostFetch)
+
+	funcWriteType := wasmedge.NewFunctionType(
+		[]*wasmedge.ValType{
+			wasmedge.NewValTypeI32(),
+		},
+		[]*wasmedge.ValType{})
+	hostWrite := wasmedge.NewFunction(funcWriteType, h.writeMem, nil, 0)
+	obj.AddFunction("write_mem", hostWrite)
+
+	vm.RegisterModule(obj)
+
+	vm.LoadWasmBuffer(wasmCode)
+	vm.Validate()
+	vm.Instantiate()
+
+	bg := bindgen.New(vm)
+	bg.Instantiate()
+	// Execute WASM function
+	results, _, err := bg.Execute(fnName, params...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute WASM function: %v", err)
+	}
+
+	return results, nil
 }
 
 // do the http fetch
@@ -60,62 +111,4 @@ func (h *host) writeMem(_ any, callframe *wasmedge.CallingFrame, params []any) (
 	mem.SetData(h.fetchResult, uint(pointer), uint(len(h.fetchResult)))
 
 	return nil, wasmedge.Result_Success
-}
-
-// ExecuteWasm executes WebAssembly code and returns proto Value structures
-func ExecuteWasm(wasmCode []byte, fnName string, params []any) ([]any, error) {
-	fmt.Println("Go: Args:", os.Args)
-
-	wasmedge.SetLogErrorLevel()
-
-	conf := wasmedge.NewConfigure(wasmedge.WASI)
-	vm := wasmedge.NewVMWithConfig(conf)
-	obj := wasmedge.NewModule("env")
-
-	h := host{}
-	// Add host functions into the module instance
-	funcFetchType := wasmedge.NewFunctionType(
-		[]*wasmedge.ValType{
-			wasmedge.NewValTypeI32(),
-			wasmedge.NewValTypeI32(),
-		},
-		[]*wasmedge.ValType{
-			wasmedge.NewValTypeI32(),
-		})
-
-	hostFetch := wasmedge.NewFunction(funcFetchType, h.fetch, nil, 0)
-	obj.AddFunction("fetch", hostFetch)
-
-	funcWriteType := wasmedge.NewFunctionType(
-		[]*wasmedge.ValType{
-			wasmedge.NewValTypeI32(),
-		},
-		[]*wasmedge.ValType{})
-	hostWrite := wasmedge.NewFunction(funcWriteType, h.writeMem, nil, 0)
-	obj.AddFunction("write_mem", hostWrite)
-
-	vm.RegisterModule(obj)
-
-	vm.LoadWasmBuffer(wasmCode)
-	vm.Validate()
-	vm.Instantiate()
-
-	bg := bindgen.New(vm)
-	bg.Instantiate()
-	// Execute WASM function
-	results, _, err := bg.Execute(fnName, params...)
-	if err != nil {
-		// Clean up resources
-		obj.Release()
-		vm.Release()
-		conf.Release()
-		return nil, fmt.Errorf("failed to execute WASM function: %v", err)
-	}
-
-	// Clean up resources
-	obj.Release()
-	vm.Release()
-	conf.Release()
-
-	return results, nil
 }

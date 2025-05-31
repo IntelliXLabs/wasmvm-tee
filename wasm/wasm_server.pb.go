@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: proto/wasm/wasm_server.proto
+// source: wasm/wasm_server.proto
 
 package wasm
 
@@ -39,7 +39,7 @@ type WASMVMExecution struct {
 
 func (x *WASMVMExecution) Reset() {
 	*x = WASMVMExecution{}
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[0]
+	mi := &file_wasm_wasm_server_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -51,7 +51,7 @@ func (x *WASMVMExecution) String() string {
 func (*WASMVMExecution) ProtoMessage() {}
 
 func (x *WASMVMExecution) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[0]
+	mi := &file_wasm_wasm_server_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -64,7 +64,7 @@ func (x *WASMVMExecution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WASMVMExecution.ProtoReflect.Descriptor instead.
 func (*WASMVMExecution) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_server_proto_rawDescGZIP(), []int{0}
+	return file_wasm_wasm_server_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *WASMVMExecution) GetVersion() string {
@@ -130,7 +130,7 @@ type WASMVMExecutionResult struct {
 
 func (x *WASMVMExecutionResult) Reset() {
 	*x = WASMVMExecutionResult{}
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[1]
+	mi := &file_wasm_wasm_server_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -142,7 +142,7 @@ func (x *WASMVMExecutionResult) String() string {
 func (*WASMVMExecutionResult) ProtoMessage() {}
 
 func (x *WASMVMExecutionResult) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[1]
+	mi := &file_wasm_wasm_server_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -155,7 +155,7 @@ func (x *WASMVMExecutionResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WASMVMExecutionResult.ProtoReflect.Descriptor instead.
 func (*WASMVMExecutionResult) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_server_proto_rawDescGZIP(), []int{1}
+	return file_wasm_wasm_server_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *WASMVMExecutionResult) GetInputs() []*WasmValue {
@@ -197,7 +197,7 @@ type WASMVMExecutionRequest struct {
 
 func (x *WASMVMExecutionRequest) Reset() {
 	*x = WASMVMExecutionRequest{}
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[2]
+	mi := &file_wasm_wasm_server_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -209,7 +209,7 @@ func (x *WASMVMExecutionRequest) String() string {
 func (*WASMVMExecutionRequest) ProtoMessage() {}
 
 func (x *WASMVMExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[2]
+	mi := &file_wasm_wasm_server_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,7 +222,7 @@ func (x *WASMVMExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WASMVMExecutionRequest.ProtoReflect.Descriptor instead.
 func (*WASMVMExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_server_proto_rawDescGZIP(), []int{2}
+	return file_wasm_wasm_server_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *WASMVMExecutionRequest) GetExecution() *WASMVMExecution {
@@ -243,7 +243,7 @@ type WASMVMExecutionResponse struct {
 
 func (x *WASMVMExecutionResponse) Reset() {
 	*x = WASMVMExecutionResponse{}
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[3]
+	mi := &file_wasm_wasm_server_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -255,7 +255,7 @@ func (x *WASMVMExecutionResponse) String() string {
 func (*WASMVMExecutionResponse) ProtoMessage() {}
 
 func (x *WASMVMExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_server_proto_msgTypes[3]
+	mi := &file_wasm_wasm_server_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -268,7 +268,7 @@ func (x *WASMVMExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WASMVMExecutionResponse.ProtoReflect.Descriptor instead.
 func (*WASMVMExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_server_proto_rawDescGZIP(), []int{3}
+	return file_wasm_wasm_server_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *WASMVMExecutionResponse) GetRequestId() string {
@@ -285,11 +285,11 @@ func (x *WASMVMExecutionResponse) GetResult() *WASMVMExecutionResult {
 	return nil
 }
 
-var File_proto_wasm_wasm_server_proto protoreflect.FileDescriptor
+var File_wasm_wasm_server_proto protoreflect.FileDescriptor
 
-const file_proto_wasm_wasm_server_proto_rawDesc = "" +
+const file_wasm_wasm_server_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/wasm/wasm_server.proto\x12\x04wasm\x1a\x1cgoogle/api/annotations.proto\x1a\x1bproto/wasm/wasm_input.proto\"\xf8\x01\n" +
+	"\x16wasm/wasm_server.proto\x12\x04wasm\x1a\x1cgoogle/api/annotations.proto\x1a\x15wasm/wasm_input.proto\"\xf8\x01\n" +
 	"\x0fWASMVMExecution\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1d\n" +
 	"\n" +
@@ -315,26 +315,26 @@ const file_proto_wasm_wasm_server_proto_rawDesc = "" +
 	"\aExecute\x12\x1c.wasm.WASMVMExecutionRequest\x1a\x1d.wasm.WASMVMExecutionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/dtvm/executeB)Z'github.com/IntelliXLabs/wasmvm-tee/wasmb\x06proto3"
 
 var (
-	file_proto_wasm_wasm_server_proto_rawDescOnce sync.Once
-	file_proto_wasm_wasm_server_proto_rawDescData []byte
+	file_wasm_wasm_server_proto_rawDescOnce sync.Once
+	file_wasm_wasm_server_proto_rawDescData []byte
 )
 
-func file_proto_wasm_wasm_server_proto_rawDescGZIP() []byte {
-	file_proto_wasm_wasm_server_proto_rawDescOnce.Do(func() {
-		file_proto_wasm_wasm_server_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_wasm_wasm_server_proto_rawDesc), len(file_proto_wasm_wasm_server_proto_rawDesc)))
+func file_wasm_wasm_server_proto_rawDescGZIP() []byte {
+	file_wasm_wasm_server_proto_rawDescOnce.Do(func() {
+		file_wasm_wasm_server_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_wasm_wasm_server_proto_rawDesc), len(file_wasm_wasm_server_proto_rawDesc)))
 	})
-	return file_proto_wasm_wasm_server_proto_rawDescData
+	return file_wasm_wasm_server_proto_rawDescData
 }
 
-var file_proto_wasm_wasm_server_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_proto_wasm_wasm_server_proto_goTypes = []any{
+var file_wasm_wasm_server_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_wasm_wasm_server_proto_goTypes = []any{
 	(*WASMVMExecution)(nil),         // 0: wasm.WASMVMExecution
 	(*WASMVMExecutionResult)(nil),   // 1: wasm.WASMVMExecutionResult
 	(*WASMVMExecutionRequest)(nil),  // 2: wasm.WASMVMExecutionRequest
 	(*WASMVMExecutionResponse)(nil), // 3: wasm.WASMVMExecutionResponse
 	(*WasmValue)(nil),               // 4: wasm.WasmValue
 }
-var file_proto_wasm_wasm_server_proto_depIdxs = []int32{
+var file_wasm_wasm_server_proto_depIdxs = []int32{
 	4, // 0: wasm.WASMVMExecution.inputs:type_name -> wasm.WasmValue
 	4, // 1: wasm.WASMVMExecutionResult.inputs:type_name -> wasm.WasmValue
 	4, // 2: wasm.WASMVMExecutionResult.output_values:type_name -> wasm.WasmValue
@@ -349,27 +349,27 @@ var file_proto_wasm_wasm_server_proto_depIdxs = []int32{
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_proto_wasm_wasm_server_proto_init() }
-func file_proto_wasm_wasm_server_proto_init() {
-	if File_proto_wasm_wasm_server_proto != nil {
+func init() { file_wasm_wasm_server_proto_init() }
+func file_wasm_wasm_server_proto_init() {
+	if File_wasm_wasm_server_proto != nil {
 		return
 	}
-	file_proto_wasm_wasm_input_proto_init()
+	file_wasm_wasm_input_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_wasm_wasm_server_proto_rawDesc), len(file_proto_wasm_wasm_server_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_wasm_wasm_server_proto_rawDesc), len(file_wasm_wasm_server_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_wasm_wasm_server_proto_goTypes,
-		DependencyIndexes: file_proto_wasm_wasm_server_proto_depIdxs,
-		MessageInfos:      file_proto_wasm_wasm_server_proto_msgTypes,
+		GoTypes:           file_wasm_wasm_server_proto_goTypes,
+		DependencyIndexes: file_wasm_wasm_server_proto_depIdxs,
+		MessageInfos:      file_wasm_wasm_server_proto_msgTypes,
 	}.Build()
-	File_proto_wasm_wasm_server_proto = out.File
-	file_proto_wasm_wasm_server_proto_goTypes = nil
-	file_proto_wasm_wasm_server_proto_depIdxs = nil
+	File_wasm_wasm_server_proto = out.File
+	file_wasm_wasm_server_proto_goTypes = nil
+	file_wasm_wasm_server_proto_depIdxs = nil
 }

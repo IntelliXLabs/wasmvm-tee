@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/wasm/wasm_input.proto",
+    "title": "wasm/wasm_input.proto",
     "version": "version not set"
   },
   "consumes": [

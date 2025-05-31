@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: proto/wasm/wasm_input.proto
+// source: wasm/wasm_input.proto
 
 package wasm
 
@@ -73,7 +73,7 @@ type WasmValue struct {
 
 func (x *WasmValue) Reset() {
 	*x = WasmValue{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[0]
+	mi := &file_wasm_wasm_input_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -85,7 +85,7 @@ func (x *WasmValue) String() string {
 func (*WasmValue) ProtoMessage() {}
 
 func (x *WasmValue) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[0]
+	mi := &file_wasm_wasm_input_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -98,7 +98,7 @@ func (x *WasmValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WasmValue.ProtoReflect.Descriptor instead.
 func (*WasmValue) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{0}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *WasmValue) GetValue() isWasmValue_Value {
@@ -429,7 +429,7 @@ type Int8Array struct {
 
 func (x *Int8Array) Reset() {
 	*x = Int8Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[1]
+	mi := &file_wasm_wasm_input_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +441,7 @@ func (x *Int8Array) String() string {
 func (*Int8Array) ProtoMessage() {}
 
 func (x *Int8Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[1]
+	mi := &file_wasm_wasm_input_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +454,7 @@ func (x *Int8Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Int8Array.ProtoReflect.Descriptor instead.
 func (*Int8Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{1}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Int8Array) GetValues() []int32 {
@@ -475,7 +475,7 @@ type Uint16Array struct {
 
 func (x *Uint16Array) Reset() {
 	*x = Uint16Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[2]
+	mi := &file_wasm_wasm_input_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -487,7 +487,7 @@ func (x *Uint16Array) String() string {
 func (*Uint16Array) ProtoMessage() {}
 
 func (x *Uint16Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[2]
+	mi := &file_wasm_wasm_input_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -500,7 +500,7 @@ func (x *Uint16Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Uint16Array.ProtoReflect.Descriptor instead.
 func (*Uint16Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{2}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Uint16Array) GetValues() []uint32 {
@@ -521,7 +521,7 @@ type Int16Array struct {
 
 func (x *Int16Array) Reset() {
 	*x = Int16Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[3]
+	mi := &file_wasm_wasm_input_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -533,7 +533,7 @@ func (x *Int16Array) String() string {
 func (*Int16Array) ProtoMessage() {}
 
 func (x *Int16Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[3]
+	mi := &file_wasm_wasm_input_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -546,7 +546,7 @@ func (x *Int16Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Int16Array.ProtoReflect.Descriptor instead.
 func (*Int16Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{3}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Int16Array) GetValues() []int32 {
@@ -567,7 +567,7 @@ type Uint32Array struct {
 
 func (x *Uint32Array) Reset() {
 	*x = Uint32Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[4]
+	mi := &file_wasm_wasm_input_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -579,7 +579,7 @@ func (x *Uint32Array) String() string {
 func (*Uint32Array) ProtoMessage() {}
 
 func (x *Uint32Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[4]
+	mi := &file_wasm_wasm_input_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -592,7 +592,7 @@ func (x *Uint32Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Uint32Array.ProtoReflect.Descriptor instead.
 func (*Uint32Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{4}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Uint32Array) GetValues() []uint32 {
@@ -613,7 +613,7 @@ type Int32Array struct {
 
 func (x *Int32Array) Reset() {
 	*x = Int32Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[5]
+	mi := &file_wasm_wasm_input_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +625,7 @@ func (x *Int32Array) String() string {
 func (*Int32Array) ProtoMessage() {}
 
 func (x *Int32Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[5]
+	mi := &file_wasm_wasm_input_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +638,7 @@ func (x *Int32Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Int32Array.ProtoReflect.Descriptor instead.
 func (*Int32Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{5}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Int32Array) GetValues() []int32 {
@@ -659,7 +659,7 @@ type Uint64Array struct {
 
 func (x *Uint64Array) Reset() {
 	*x = Uint64Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[6]
+	mi := &file_wasm_wasm_input_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -671,7 +671,7 @@ func (x *Uint64Array) String() string {
 func (*Uint64Array) ProtoMessage() {}
 
 func (x *Uint64Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[6]
+	mi := &file_wasm_wasm_input_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -684,7 +684,7 @@ func (x *Uint64Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Uint64Array.ProtoReflect.Descriptor instead.
 func (*Uint64Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{6}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Uint64Array) GetValues() []uint64 {
@@ -705,7 +705,7 @@ type Int64Array struct {
 
 func (x *Int64Array) Reset() {
 	*x = Int64Array{}
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[7]
+	mi := &file_wasm_wasm_input_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +717,7 @@ func (x *Int64Array) String() string {
 func (*Int64Array) ProtoMessage() {}
 
 func (x *Int64Array) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_wasm_wasm_input_proto_msgTypes[7]
+	mi := &file_wasm_wasm_input_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -730,7 +730,7 @@ func (x *Int64Array) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Int64Array.ProtoReflect.Descriptor instead.
 func (*Int64Array) Descriptor() ([]byte, []int) {
-	return file_proto_wasm_wasm_input_proto_rawDescGZIP(), []int{7}
+	return file_wasm_wasm_input_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Int64Array) GetValues() []int64 {
@@ -740,11 +740,11 @@ func (x *Int64Array) GetValues() []int64 {
 	return nil
 }
 
-var File_proto_wasm_wasm_input_proto protoreflect.FileDescriptor
+var File_wasm_wasm_input_proto protoreflect.FileDescriptor
 
-const file_proto_wasm_wasm_input_proto_rawDesc = "" +
+const file_wasm_wasm_input_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/wasm/wasm_input.proto\x12\x04wasm\"\xe0\x06\n" +
+	"\x15wasm/wasm_input.proto\x12\x04wasm\"\xe0\x06\n" +
 	"\tWasmValue\x12\x1f\n" +
 	"\n" +
 	"bool_value\x18\x01 \x01(\bH\x00R\tboolValue\x12\x1f\n" +
@@ -798,19 +798,19 @@ const file_proto_wasm_wasm_input_proto_rawDesc = "" +
 	"\x06values\x18\x01 \x03(\x03R\x06valuesB)Z'github.com/IntelliXLabs/wasmvm-tee/wasmb\x06proto3"
 
 var (
-	file_proto_wasm_wasm_input_proto_rawDescOnce sync.Once
-	file_proto_wasm_wasm_input_proto_rawDescData []byte
+	file_wasm_wasm_input_proto_rawDescOnce sync.Once
+	file_wasm_wasm_input_proto_rawDescData []byte
 )
 
-func file_proto_wasm_wasm_input_proto_rawDescGZIP() []byte {
-	file_proto_wasm_wasm_input_proto_rawDescOnce.Do(func() {
-		file_proto_wasm_wasm_input_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_wasm_wasm_input_proto_rawDesc), len(file_proto_wasm_wasm_input_proto_rawDesc)))
+func file_wasm_wasm_input_proto_rawDescGZIP() []byte {
+	file_wasm_wasm_input_proto_rawDescOnce.Do(func() {
+		file_wasm_wasm_input_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_wasm_wasm_input_proto_rawDesc), len(file_wasm_wasm_input_proto_rawDesc)))
 	})
-	return file_proto_wasm_wasm_input_proto_rawDescData
+	return file_wasm_wasm_input_proto_rawDescData
 }
 
-var file_proto_wasm_wasm_input_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
-var file_proto_wasm_wasm_input_proto_goTypes = []any{
+var file_wasm_wasm_input_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_wasm_wasm_input_proto_goTypes = []any{
 	(*WasmValue)(nil),   // 0: wasm.WasmValue
 	(*Int8Array)(nil),   // 1: wasm.Int8Array
 	(*Uint16Array)(nil), // 2: wasm.Uint16Array
@@ -820,7 +820,7 @@ var file_proto_wasm_wasm_input_proto_goTypes = []any{
 	(*Uint64Array)(nil), // 6: wasm.Uint64Array
 	(*Int64Array)(nil),  // 7: wasm.Int64Array
 }
-var file_proto_wasm_wasm_input_proto_depIdxs = []int32{
+var file_wasm_wasm_input_proto_depIdxs = []int32{
 	1, // 0: wasm.WasmValue.int8_array:type_name -> wasm.Int8Array
 	2, // 1: wasm.WasmValue.uint16_array:type_name -> wasm.Uint16Array
 	3, // 2: wasm.WasmValue.int16_array:type_name -> wasm.Int16Array
@@ -835,12 +835,12 @@ var file_proto_wasm_wasm_input_proto_depIdxs = []int32{
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_proto_wasm_wasm_input_proto_init() }
-func file_proto_wasm_wasm_input_proto_init() {
-	if File_proto_wasm_wasm_input_proto != nil {
+func init() { file_wasm_wasm_input_proto_init() }
+func file_wasm_wasm_input_proto_init() {
+	if File_wasm_wasm_input_proto != nil {
 		return
 	}
-	file_proto_wasm_wasm_input_proto_msgTypes[0].OneofWrappers = []any{
+	file_wasm_wasm_input_proto_msgTypes[0].OneofWrappers = []any{
 		(*WasmValue_BoolValue)(nil),
 		(*WasmValue_Int8Value)(nil),
 		(*WasmValue_Uint8Value)(nil),
@@ -866,17 +866,17 @@ func file_proto_wasm_wasm_input_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_wasm_wasm_input_proto_rawDesc), len(file_proto_wasm_wasm_input_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_wasm_wasm_input_proto_rawDesc), len(file_wasm_wasm_input_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_proto_wasm_wasm_input_proto_goTypes,
-		DependencyIndexes: file_proto_wasm_wasm_input_proto_depIdxs,
-		MessageInfos:      file_proto_wasm_wasm_input_proto_msgTypes,
+		GoTypes:           file_wasm_wasm_input_proto_goTypes,
+		DependencyIndexes: file_wasm_wasm_input_proto_depIdxs,
+		MessageInfos:      file_wasm_wasm_input_proto_msgTypes,
 	}.Build()
-	File_proto_wasm_wasm_input_proto = out.File
-	file_proto_wasm_wasm_input_proto_goTypes = nil
-	file_proto_wasm_wasm_input_proto_depIdxs = nil
+	File_wasm_wasm_input_proto = out.File
+	file_wasm_wasm_input_proto_goTypes = nil
+	file_wasm_wasm_input_proto_depIdxs = nil
 }
