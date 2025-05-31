@@ -205,7 +205,7 @@ func corsHandlerFunc(fn http.HandlerFunc) http.HandlerFunc {
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"status":"healthy","service":"dtvm-tee","timestamp":"%s"}`, time.Now().Format(time.RFC3339))
+	fmt.Fprintf(w, `{"status":"healthy","service":"wasmvm-tee","timestamp":"%s"}`, time.Now().Format(time.RFC3339))
 }
 
 // apiInfoHandler provides API documentation

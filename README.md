@@ -1,4 +1,4 @@
-# DTVM-TEE: Trusted Execution Environment for DTVM
+# wasmvm-tee: Trusted Execution Environment for DTVM
 
 A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecode within a Trusted Execution Environment (TEE) using AMD SEV-SNP technology. This project provides cryptographic attestation of execution results, ensuring integrity and confidentiality of computations.
 
@@ -8,7 +8,7 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   gRPC Client   │───▶│  DTVM-TEE       │───▶│   AMD SEV-SNP   │
+│   gRPC Client   │───▶│  wasmvm-tee       │───▶│   AMD SEV-SNP   │
 │                 │    │  Server         │    │   Attestation   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
@@ -61,8 +61,8 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/IntelliXLabs/dtvm-tee.git
-cd dtvm-tee
+git clone https://github.com/IntelliXLabs/wasmvm-tee.git
+cd wasmvm-tee
 ```
 
 2. Install dependencies:

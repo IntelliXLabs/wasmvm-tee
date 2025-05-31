@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package wasm;
+
+import "google/api/annotations.proto";
+import "proto/wasm/wasm_input.proto";
+
+option go_package = "github.com/IntelliXLabs/wasmvm-tee/wasm";
+
+// WASMVMExecution represents a WASMVM execution request containing
+// the bytecode and input parameters to be executed in TEE environment
+message WASMVMExecution {
+  string version = 1;            // Protocol version
+  string request_id = 2;         // Unique request identifier
+  string bytecode = 3;           // WASMVM bytecode (base64 encoded)
+  string fn_name = 4;            // Function name to execute
+  repeated WasmValue inputs = 5; // Input parameters
+  int64 timestamp = 6;           // Timestamp of the execution request
+  bool is_force_interpreter = 7; // Whether to force interpreter mode
+}
+
+// WASMVMExecutionResult contains the complete execution result
+// including inputs, outputs, hashes, and TEE attestation data
+message WASMVMExecutionResult {
+  repeated WasmValue inputs = 1; // Original input parameters (base64 encoded)
+  repeated WasmValue output_values = 3; // Execution output values
+  string attestation = 5;               // TEE attestation report (JSON string)
+  string report_data = 6; // TEE report data (hex encoded), hash(inputs+outputs)
+}
+
+// WASMVMExecutionRequest combines execution parameters and runtime
+// configuration
+message WASMVMExecutionRequest {
+  WASMVMExecution execution = 1; // Execution parameters (bytecode, inputs)
+}
+
+// WASMVMExecutionResponse contains the execution result with request tracking
+message WASMVMExecutionResponse {
+  string request_id = 1;            // Request identifier for tracking
+  WASMVMExecutionResult result = 2; // Complete execution result
+}
+
+service WASMVMTeeService {
+  rpc Execute(WASMVMExecutionRequest) returns (WASMVMExecutionResponse) {
+    option (google.api.http) = {
+      post : "/v1/dtvm/execute"
+      body : "*"
+    };
+  }
+}

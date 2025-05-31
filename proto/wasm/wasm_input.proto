@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package wasm;
+
+option go_package = "github.com/IntelliXLabs/wasmvm-tee/wasm";
+
+// WasmValue defines a universal input value that supports all input types
+// for wasmedge-bindgen.
+// This message is designed to be fully compatible with the wasmedge-bindgen
+// library, accommodating all parameter types accepted by its Execute() method.
+// The use of `oneof` ensures that each WasmValue can only be of one specific
+// type, providing type safety.
+//
+// Supported types include:
+// - All basic numeric types (bool, int8-int64, uint8-uint64, float32/64)
+// - Strings and byte arrays
+// - Various array types
+//
+// Example usage:
+//   // String input
+//   input1 := &WasmValue{Value: &WasmValue_StringValue{StringValue: "hello"}}
+//
+//   // Integer array input
+//   input2 := &WasmValue{Value: &WasmValue_Int32Array{
+//     Int32Array: &Int32Array{Values: []int32{1, 2, 3}}
+//   }}
+message WasmValue {
+  oneof value {
+    // === Basic Numeric Types ===
+    // These types directly correspond to the basic types supported by
+    // wasmedge-bindgen.
+
+    bool bool_value = 1; // Boolean value, corresponds to Go's `bool`.
+    int32 int8_value =
+        2; // 8-bit signed integer, corresponds to Go's `int8`. Stored as int32
+           // to align with protobuf specifications.
+    uint32 uint8_value = 3;  // 8-bit unsigned integer, corresponds to Go's
+                             // `uint8`. Stored as uint32.
+    int32 int16_value = 4;   // 16-bit signed integer, corresponds to Go's
+                             // `int16`. Stored as int32.
+    uint32 uint16_value = 5; // 16-bit unsigned integer, corresponds to Go's
+                             // `uint16`. Stored as uint32.
+    int32 int32_value =
+        6; // 32-bit signed integer, corresponds to Go's `int32`.
+    uint32 uint32_value =
+        7; // 32-bit unsigned integer, corresponds to Go's `uint32`.
+    int64 int64_value =
+        8; // 64-bit signed integer, corresponds to Go's `int64`.
+    uint64 uint64_value =
+        9; // 64-bit unsigned integer, corresponds to Go's `uint64`.
+    float float32_value =
+        10; // 32-bit floating-point number, corresponds to Go's `float32`.
+    double float64_value =
+        11; // 64-bit floating-point number, corresponds to Go's `float64`.
+
+    // === String and Byte Array ===
+    // These are common complex data types used in WASM.
+
+    string string_value = 12; // UTF-8 string, corresponds to Go's `string`.
+    bytes bytes_value = 13;   // Byte array, corresponds to Go's `[]byte`. Often
+                              // used for binary data transfer.
+
+    // === Array Types ===
+    // These array types correspond to the slice types supported by
+    // wasmedge-bindgen. Each array type has a dedicated message definition to
+    // ensure type safety.
+
+    Int8Array int8_array = 20; // Array of int8, corresponds to Go's `[]int8`.
+    Uint16Array uint16_array =
+        21; // Array of uint16, corresponds to Go's `[]uint16`.
+    Int16Array int16_array =
+        22; // Array of int16, corresponds to Go's `[]int16`.
+    Uint32Array uint32_array =
+        23; // Array of uint32, corresponds to Go's `[]uint32`.
+    Int32Array int32_array =
+        24; // Array of int32, corresponds to Go's `[]int32`.
+    Uint64Array uint64_array =
+        25; // Array of uint64, corresponds to Go's `[]uint64`.
+    Int64Array int64_array =
+        26; // Array of int64, corresponds to Go's `[]int64`.
+  }
+}
+
+// === Array Type Definitions ===
+// The following messages define various array types. Each contains a `repeated`
+// field to store the array elements.
+//
+// Note: Due to Protobuf limitations, some smaller integer types (e.g., int8,
+// int16) are stored using larger types (e.g., int32). Type checking is
+// necessary during conversion.
+
+// Int8Array defines an array of 8-bit signed integers.
+// Note: Protobuf does not have a native `int8` type, so `int32` is used for
+// storage. When converting to Go types, ensure values are within the range
+// [-128, 127].
+message Int8Array {
+  repeated int32 values = 1; // Values should range from -128 to 127.
+}
+
+// Uint16Array defines an array of 16-bit unsigned integers.
+// Values range from 0 to 65535.
+message Uint16Array {
+  repeated uint32 values = 1; // Stored as uint32 due to Protobuf limitations.
+}
+
+// Int16Array defines an array of 16-bit signed integers.
+// Values range from -32768 to 32767.
+message Int16Array {
+  repeated int32 values = 1; // Stored as int32 due to Protobuf limitations.
+}
+
+// Uint32Array defines an array of 32-bit unsigned integers.
+// Values range from 0 to 4,294,967,295.
+message Uint32Array { repeated uint32 values = 1; }
+
+// Int32Array defines an array of 32-bit signed integers.
+// Values range from -2,147,483,648 to 2,147,483,647.
+message Int32Array { repeated int32 values = 1; }
+
+// Uint64Array defines an array of 64-bit unsigned integers.
+// Values range from 0 to 18,446,744,073,709,551,615.
+message Uint64Array { repeated uint64 values = 1; }
+
+// Int64Array defines an array of 64-bit signed integers.
+// Values range from -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807.
+message Int64Array { repeated int64 values = 1; }
+
+// === Usage Notes ===
+//
+// 1. Type Conversion:
+//    When converting Protobuf messages to Go interfaces, appropriate type
+//    casting is necessary, especially for smaller integer types stored using
+//    larger Protobuf types.
+//
+// 2. Array Length Limits:
+//    While Protobuf theoretically supports arrays of arbitrary length, memory
+//    limits and performance implications should be considered in practice.
+//
+// 3. Byte Order:
+//    For byte arrays (`bytes`), Protobuf preserves the original byte order.
+//
+// 4. Null Value Handling:
+//    Due to the use of `oneof`, each `WasmValue` must contain exactly one
+//    value. If representing null or absence of a value is needed, consider
+//    adding a specific `null_value` field or using wrapper types (e.g.,
+//    `google.protobuf.StringValue`).
+//
+// 5. Backward Compatibility:
+//    When adding new input types, use new field numbers to avoid conflicts with
+//    existing fields and maintain backward compatibility.

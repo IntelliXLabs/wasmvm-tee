@@ -1,0 +1,414 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/wasm/wasm.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "WASMVMTeeService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/dtvm/execute": {
+      "post": {
+        "operationId": "WASMVMTeeService_Execute",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wasmWASMVMExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wasmWASMVMExecutionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WASMVMTeeService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "wasmInputValue": {
+      "type": "object",
+      "properties": {
+        "boolValue": {
+          "type": "boolean",
+          "description": "Boolean value, corresponds to Go's `bool`."
+        },
+        "int8Value": {
+          "type": "integer",
+          "format": "int32",
+          "title": "8-bit signed integer, corresponds to Go's `int8`. Stored as int32"
+        },
+        "uint8Value": {
+          "type": "integer",
+          "format": "int64",
+          "description": "to align with protobuf specifications.\n\n8-bit unsigned integer, corresponds to Go's"
+        },
+        "int16Value": {
+          "type": "integer",
+          "format": "int32",
+          "description": "`uint8`. Stored as uint32.\n\n16-bit signed integer, corresponds to Go's"
+        },
+        "uint16Value": {
+          "type": "integer",
+          "format": "int64",
+          "description": "`int16`. Stored as int32.\n\n16-bit unsigned integer, corresponds to Go's"
+        },
+        "int32Value": {
+          "type": "integer",
+          "format": "int32",
+          "description": "`uint16`. Stored as uint32.\n\n32-bit signed integer, corresponds to Go's `int32`."
+        },
+        "uint32Value": {
+          "type": "integer",
+          "format": "int64",
+          "description": "32-bit unsigned integer, corresponds to Go's `uint32`."
+        },
+        "int64Value": {
+          "type": "string",
+          "format": "int64",
+          "description": "64-bit signed integer, corresponds to Go's `int64`."
+        },
+        "uint64Value": {
+          "type": "string",
+          "format": "uint64",
+          "description": "64-bit unsigned integer, corresponds to Go's `uint64`."
+        },
+        "float32Value": {
+          "type": "number",
+          "format": "float",
+          "description": "32-bit floating-point number, corresponds to Go's `float32`."
+        },
+        "float64Value": {
+          "type": "number",
+          "format": "double",
+          "description": "64-bit floating-point number, corresponds to Go's `float64`."
+        },
+        "stringValue": {
+          "type": "string",
+          "description": "UTF-8 string, corresponds to Go's `string`."
+        },
+        "bytesValue": {
+          "type": "string",
+          "format": "byte",
+          "title": "Byte array, corresponds to Go's `[]byte`. Often"
+        },
+        "int8Array": {
+          "$ref": "#/definitions/wasmInt8Array",
+          "description": "Array of int8, corresponds to Go's `[]int8`."
+        },
+        "uint16Array": {
+          "$ref": "#/definitions/wasmUint16Array",
+          "description": "Array of uint16, corresponds to Go's `[]uint16`."
+        },
+        "int16Array": {
+          "$ref": "#/definitions/wasmInt16Array",
+          "description": "Array of int16, corresponds to Go's `[]int16`."
+        },
+        "uint32Array": {
+          "$ref": "#/definitions/wasmUint32Array",
+          "description": "Array of uint32, corresponds to Go's `[]uint32`."
+        },
+        "int32Array": {
+          "$ref": "#/definitions/wasmInt32Array",
+          "description": "Array of int32, corresponds to Go's `[]int32`."
+        },
+        "uint64Array": {
+          "$ref": "#/definitions/wasmUint64Array",
+          "description": "Array of uint64, corresponds to Go's `[]uint64`."
+        },
+        "int64Array": {
+          "$ref": "#/definitions/wasmInt64Array",
+          "description": "Array of int64, corresponds to Go's `[]int64`."
+        }
+      },
+      "description": "InputValue defines a universal input value that supports all input types\nfor wasmedge-bindgen.\nThis message is designed to be fully compatible with the wasmedge-bindgen\nlibrary, accommodating all parameter types accepted by its Execute() method.\nThe use of `oneof` ensures that each InputValue can only be of one specific\ntype, providing type safety.\n\nSupported types include:\n- All basic numeric types (bool, int8-int64, uint8-uint64, float32/64)\n- Strings and byte arrays\n- Various array types\n\nExample usage:\n  // String input\n  input1 := \u0026InputValue{Value: \u0026InputValue_StringValue{StringValue: \"hello\"}}\n\n  // Integer array input\n  input2 := \u0026InputValue{Value: \u0026InputValue_Int32Array{\n    Int32Array: \u0026Int32Array{Values: []int32{1, 2, 3}}\n  }}"
+    },
+    "wasmInt16Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": "Stored as int32 due to Protobuf limitations."
+        }
+      },
+      "description": "Int16Array defines an array of 16-bit signed integers.\nValues range from -32768 to 32767."
+    },
+    "wasmInt32Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "description": "Int32Array defines an array of 32-bit signed integers.\nValues range from -2,147,483,648 to 2,147,483,647."
+    },
+    "wasmInt64Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      },
+      "description": "Int64Array defines an array of 64-bit signed integers.\nValues range from -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807."
+    },
+    "wasmInt8Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": "Values should range from -128 to 127."
+        }
+      },
+      "description": "Int8Array defines an array of 8-bit signed integers.\nNote: Protobuf does not have a native `int8` type, so `int32` is used for\nstorage. When converting to Go types, ensure values are within the range\n[-128, 127]."
+    },
+    "wasmUint16Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "description": "Stored as uint32 due to Protobuf limitations."
+        }
+      },
+      "description": "Uint16Array defines an array of 16-bit unsigned integers.\nValues range from 0 to 65535."
+    },
+    "wasmUint32Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "description": "Uint32Array defines an array of 32-bit unsigned integers.\nValues range from 0 to 4,294,967,295."
+    },
+    "wasmUint64Array": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          }
+        }
+      },
+      "description": "Uint64Array defines an array of 64-bit unsigned integers.\nValues range from 0 to 18,446,744,073,709,551,615."
+    },
+    "wasmValue": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/wasmValueType",
+          "title": "Type of the value"
+        },
+        "int32Value": {
+          "type": "integer",
+          "format": "int32",
+          "title": "32-bit signed integer"
+        },
+        "int64Value": {
+          "type": "string",
+          "format": "int64",
+          "title": "64-bit signed integer"
+        },
+        "float32Value": {
+          "type": "number",
+          "format": "float",
+          "title": "32-bit floating point"
+        },
+        "float64Value": {
+          "type": "number",
+          "format": "double",
+          "title": "64-bit floating point"
+        },
+        "v128Value": {
+          "type": "string",
+          "format": "byte",
+          "title": "Byte array (for V128 vectors, etc.)"
+        }
+      },
+      "title": "Value represents a typed value returned from WASMVM execution\nWraps ZenValueExtern with type information"
+    },
+    "wasmValueType": {
+      "type": "string",
+      "enum": [
+        "VALUE_TYPE_UNSPECIFIED",
+        "VALUE_TYPE_INT32",
+        "VALUE_TYPE_INT64",
+        "VALUE_TYPE_FLOAT32",
+        "VALUE_TYPE_FLOAT64",
+        "VALUE_TYPE_V128"
+      ],
+      "default": "VALUE_TYPE_UNSPECIFIED",
+      "description": "- VALUE_TYPE_UNSPECIFIED: Unspecified type\n - VALUE_TYPE_INT32: 32-bit signed integer\n - VALUE_TYPE_INT64: 64-bit signed integer\n - VALUE_TYPE_FLOAT32: 32-bit floating point\n - VALUE_TYPE_FLOAT64: 64-bit floating point\n - VALUE_TYPE_V128: Byte array (for V128 vectors, etc.)",
+      "title": "ValueType enumerates the supported value types in WASMVM"
+    },
+    "wasmWASMVMExecution": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "title": "Protocol version"
+        },
+        "requestId": {
+          "type": "string",
+          "title": "Unique request identifier"
+        },
+        "bytecode": {
+          "type": "string",
+          "title": "WASMVM bytecode (base64 encoded)"
+        },
+        "fnName": {
+          "type": "string",
+          "title": "Function name to execute"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wasmInputValue"
+          },
+          "title": "Input parameters"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "int64",
+          "title": "Timestamp of the execution request"
+        },
+        "isForceInterpreter": {
+          "type": "boolean",
+          "title": "Whether to force interpreter mode"
+        }
+      },
+      "title": "WASMVMExecution represents a WASMVM execution request containing\nthe bytecode and input parameters to be executed in TEE environment"
+    },
+    "wasmWASMVMExecutionRequest": {
+      "type": "object",
+      "properties": {
+        "execution": {
+          "$ref": "#/definitions/wasmWASMVMExecution",
+          "title": "Execution parameters (bytecode, inputs)"
+        }
+      },
+      "title": "WASMVMExecutionRequest combines execution parameters and runtime\nconfiguration"
+    },
+    "wasmWASMVMExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "title": "Request identifier for tracking"
+        },
+        "result": {
+          "$ref": "#/definitions/wasmWASMVMExecutionResult",
+          "title": "Complete execution result"
+        }
+      },
+      "title": "WASMVMExecutionResponse contains the execution result with request tracking"
+    },
+    "wasmWASMVMExecutionResult": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Original input parameters (base64 encoded)"
+        },
+        "outputValues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wasmValue"
+          },
+          "title": "Execution output values"
+        },
+        "attestation": {
+          "type": "string",
+          "title": "TEE attestation report (JSON string)"
+        },
+        "reportData": {
+          "type": "string",
+          "title": "TEE report data (hex encoded), hash(inputs+outputs)"
+        }
+      },
+      "title": "WASMVMExecutionResult contains the complete execution result\nincluding inputs, outputs, hashes, and TEE attestation data"
+    }
+  }
+}
