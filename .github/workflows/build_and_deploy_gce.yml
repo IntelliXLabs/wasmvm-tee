@@ -75,19 +75,58 @@ jobs:
           --command="
             echo '--- Starting deployment on GCE instance ---'
             
-            echo 'Stopping service: ${{ env.GCP_SERVICE_NAME }}'
-            sudo systemctl stop ${{ env.GCP_SERVICE_NAME }} || echo 'Service not running or failed to stop, continuing...'
+            # Check if there are existing processes running
+            echo 'Checking for existing ${{ env.APP_NAME }} processes...'
+            EXISTING_PIDS=\$(pgrep -f '${{ env.APP_NAME }}' || true)
+            
+            if [ ! -z \"\$EXISTING_PIDS\" ]; then
+              echo 'Found existing processes with PIDs: '\$EXISTING_PIDS
+              echo 'Killing existing processes...'
+              sudo kill -TERM \$EXISTING_PIDS || true
+              sleep 3
+              
+              # Check if any processes still exist, force kill if necessary
+              REMAINING_PIDS=\$(pgrep -f '${{ env.APP_NAME }}' || true)
+              if [ ! -z \"\$REMAINING_PIDS\" ]; then
+                echo 'Some processes still running, force killing with SIGKILL...'
+                sudo kill -KILL \$REMAINING_PIDS || true
+                sleep 1
+              fi
+              echo 'All existing processes terminated.'
+            else
+              echo 'No existing processes found.'
+            fi
             
             echo 'Moving binary from ${REMOTE_TEMP_PATH} to ${REMOTE_FINAL_PATH}'
             sudo mv '${REMOTE_TEMP_PATH}' '${REMOTE_FINAL_PATH}'
             sudo chmod +x '${REMOTE_FINAL_PATH}'
             
-            echo 'Starting service: ${{ env.GCP_SERVICE_NAME }}'
-            sudo systemctl start ${{ env.GCP_SERVICE_NAME }}
+            # Create log directory
+            sudo mkdir -p /var/log/${{ env.APP_NAME }}
+            sudo chmod 755 /var/log/${{ env.APP_NAME }}
             
-            echo 'Checking service status (waiting 5s)...'
-            sleep 5
-            sudo systemctl status ${{ env.GCP_SERVICE_NAME }} --no-pager || echo 'Failed to get service status.'
+            echo 'Starting ${{ env.APP_NAME }} with nohup...'
+            # Use nohup to start the process, redirect output to log file
+            nohup sudo ${REMOTE_FINAL_PATH} > /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log 2>&1 &
+            
+            # Get the PID of the newly started process
+            sleep 2
+            NEW_PID=\$(pgrep -f '${{ env.APP_NAME }}' || true)
+            
+            if [ ! -z \"\$NEW_PID\" ]; then
+              echo '✅ ${{ env.APP_NAME }} started successfully with PID: '\$NEW_PID
+              echo 'Process info:'
+              ps aux | grep '${{ env.APP_NAME }}' | grep -v grep || true
+              
+              # Check if log file has content (optional)
+              echo 'Recent log output:'
+              sudo tail -10 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log output yet.'
+            else
+              echo '❌ Failed to start ${{ env.APP_NAME }}'
+              echo 'Checking recent log output for errors:'
+              sudo tail -20 /var/log/${{ env.APP_NAME }}/${{ env.APP_NAME }}.log || echo 'No log file found.'
+              exit 1
+            fi
             
             echo '--- Deployment on GCE instance finished ---'
           "
