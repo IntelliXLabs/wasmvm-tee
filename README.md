@@ -1,6 +1,6 @@
-# wasmvm-tee: Trusted Execution Environment for DTVM
+# wasmvm-tee: Trusted Execution Environment for WebAssembly
 
-A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecode within a Trusted Execution Environment (TEE) using AMD SEV-SNP technology. This project provides cryptographic attestation of execution results, ensuring integrity and confidentiality of computations.
+A secure gRPC service that executes WebAssembly (WASM) bytecode within a Trusted Execution Environment (TEE) using AMD SEV-SNP technology. This project leverages WasmEdge runtime to provide cryptographic attestation of execution results, ensuring integrity and confidentiality of computations with native WASI support.
 
 ## Architecture
 
@@ -8,38 +8,65 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   gRPC Client   │───▶│  wasmvm-tee       │───▶│   AMD SEV-SNP   │
+│   gRPC Client   │───▶│  wasmvm-tee     │───▶│   AMD SEV-SNP   │
 │                 │    │  Server         │    │   Attestation   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
                               ▼
                        ┌─────────────────┐
-                       │   DTVM Runtime  │
-                       │   Execution     │
+                       │  WasmEdge       │
+                       │  Runtime        │
+                       │  + WASI Support │
                        └─────────────────┘
 ```
 
 ### Components
 
 1. **gRPC Server** (`cmd/sev_snp_server/main.go`)
-   - Listens for DTVM execution requests
+   - Listens for WebAssembly execution requests
    - Configurable port via command line arguments
    - Supports gRPC reflection for debugging
 
 2. **WASMVM TEE Service** (`wasm/server.go`)
    - Implements `WASMVMTeeService` gRPC interface
-   - Handles bytecode execution in secure environment
+   - Handles WASM bytecode execution in secure environment
    - Generates cryptographic attestations
+   - Powered by WasmEdge runtime with WASI capabilities
 
-3. **TEE Integration** (`dtvm/tee_sev_snp.go`)
+3. **WasmEdge Runtime Integration** (`wasm/wasm.go`)
+   - High-performance WebAssembly execution engine
+   - Native WASI (WebAssembly System Interface) support
+   - Socket operations and network I/O capabilities
+   - Advanced type conversion system for Go interoperability
+
+4. **TEE Integration** (`dtvm/tee_sev_snp.go`)
    - AMD SEV-SNP attestation generation
    - Secure quote provider integration
    - Cryptographic proof of execution integrity
 
-4. **Protocol Buffers** (`proto/dtvm/dtvm.proto`)
+5. **Protocol Buffers** (`proto/wasm/wasm.proto`)
    - Defines gRPC service interface
    - Message types for execution requests/responses
-   - Type-safe value representations
+   - Type-safe value representations with complex data types
+
+### WasmEdge Runtime Features
+
+- **High Performance**: Optimized WebAssembly runtime for server-side applications
+- **WASI Compliance**: Full WebAssembly System Interface support for:
+  - File system operations
+  - Environment variable access
+  - Command-line argument processing
+  - Socket and network operations
+  - Clock and random number generation
+- **Advanced Type System**: Support for complex data types including:
+  - Primitive types (u8, i32, i64, f32, f64)
+  - Strings and byte arrays
+  - Vectors and complex structures
+  - JSON serialization for complex return values
+- **Host Functions**: Extensible host function interface for:
+  - HTTP requests and web API access
+  - Memory management operations
+  - Custom system integrations
 
 ### Security Features
 
@@ -47,50 +74,38 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 - **Cryptographic Attestation**: Generates verifiable proofs of execution
 - **Input/Output Integrity**: SHA-256 hashing of all inputs and outputs
 - **Deterministic Execution**: Consistent results across multiple runs
-- **Gas Limiting**: Optional resource consumption controls
+- **Sandboxed Execution**: WasmEdge provides secure isolation for WASM modules
+- **WASI Security**: Controlled system access through WASI capabilities
 
 ## Prerequisites
 
-- Go 1.23.2 or later
+- Go 1.21 or later
+- Rust toolchain with `wasm32-wasip1` target
+- WasmEdge runtime (automatically installed via CI)
 - AMD SEV-SNP capable hardware (for production)
 - Protocol Buffers compiler (`protoc`)
 - Buf CLI tool for proto management
 
 ## Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
 
 ```bash
 git clone https://github.com/IntelliXLabs/wasmvm-tee.git
 cd wasmvm-tee
 ```
 
-2. Install dependencies:
+2. **Follow the Development section** for complete setup including:
+   - Go installation
+   - Rust and WASM target setup
+   - WasmEdge runtime installation
+   - Project dependencies
 
-```bash
-make deps
-```
-
-3. Generate protobuf files:
-
-```bash
-make proto
-```
-
-## Building
-
-### Build the server
+3. **Build and run**:
 
 ```bash
 make build
-```
-
-This will compile the SEV-SNP server from `cmd/sev_snp_server/main.go` and create the binary at `bin/sev_snp_server`.
-
-### Or build manually
-
-```bash
-go build -o bin/sev_snp_server cmd/sev_snp_server/main.go
+./bin/sev_snp_server
 ```
 
 ## Usage
@@ -110,103 +125,67 @@ make build
 ./bin/sev_snp_server -port 8080
 ```
 
-### Example Client Request
-
-The server expects `DTVMExecutionRequest` messages with the following structure:
-
-```protobuf
-message DTVMExecutionRequest {
-  DTVMExecution execution = 1;
-  DTVMRuntimeConfig runtime_config = 2;
-}
-```
-
-Where:
-
-- `execution.bytecode`: Base64-encoded DTVM bytecode
-- `execution.fn_name`: Function name to execute
-- `execution.inputs`: Base64-encoded input parameters
-- `runtime_config.mode`: Execution mode (interpreter/compiler)
-- `runtime_config.gas_limit`: Optional gas consumption limits
-
-### Response Format
-
-The server returns `DTVMExecutionResponse` containing:
-
-- `request_id`: Request tracking identifier
-- `result.output_values`: Typed execution results
-- `result.attestation`: SEV-SNP attestation report (JSON)
-- `result.report_data`: Cryptographic hash of inputs+outputs
-
 ## Development
 
-### Generate Protocol Buffers
+### Prerequisites Installation
+
+1. **Install Go** (1.21 or later):
 
 ```bash
-make proto
+# Download and install Go from https://golang.org/dl/
+# Or use package manager:
+# macOS: brew install go
+# Ubuntu: sudo apt install golang-go
+go version  # Verify installation
 ```
 
-### Format Proto Files
+2. **Install Rust and WASM target**:
 
 ```bash
-make proto-format
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+
+# Add WASM target
+rustup target add wasm32-wasip1
 ```
 
-### Lint Proto Files
+3. **Install WasmEdge runtime**:
 
 ```bash
-make proto-lint
+# Install WasmEdge using official installer
+curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
+
+# Make the installed binary available in current session
+source $HOME/.wasmedge/env
 ```
 
-### Run Tests
+4. **Install project dependencies**:
+
+```bash
+make deps
+```
+
+### Build and Test
+
+1. **Build the project**:
+
+```bash
+make build
+```
+
+2. **Run tests**:
 
 ```bash
 make test
 ```
 
-### Clean Generated Files
+### Additional Commands
 
-```bash
-make clean
-```
-
-## API Reference
-
-### gRPC Service
-
-```protobuf
-service DTVMTeeService {
-  rpc Execute(DTVMExecutionRequest) returns (DTVMExecutionResponse);
-}
-```
-
-### Supported Value Types
-
-- `VALUE_TYPE_INT32`: 32-bit signed integer
-- `VALUE_TYPE_INT64`: 64-bit signed integer  
-- `VALUE_TYPE_FLOAT32`: 32-bit floating point
-- `VALUE_TYPE_FLOAT64`: 64-bit floating point
-
-### Execution Modes
-
-- `DTVM_MODE_INTERP_UNSPECIFIED`: Interpreter mode (default)
-- `DTVM_MODE_SINGLEPASS`: Single-pass compilation
-- `DTVM_MODE_MULTIPASS`: Multi-pass compilation
-
-## Security Considerations
-
-1. **Hardware Requirements**: Production deployments require AMD SEV-SNP capable hardware
-2. **Attestation Verification**: Clients should verify attestation reports against known measurements
-3. **Input Validation**: All inputs are validated and sanitized before execution
-4. **Resource Limits**: Configure appropriate gas limits to prevent resource exhaustion
-
-## Dependencies
-
-- [DTVM](https://github.com/DTVMStack/DTVM): Deterministic Virtual Machine with SmartCogent - The core WebAssembly runtime engine
-- [dtvm-go](https://github.com/IntelliXLabs/dtvm-go): DTVM runtime library
-- [go-sev-guest](https://github.com/google/go-sev-guest): AMD SEV-SNP attestation
-- [gRPC](https://grpc.io/): High-performance RPC framework
-- [Protocol Buffers](https://protobuf.dev/): Serialization framework
+- **Generate Protocol Buffers**: `make proto`
+- **Clean build artifacts**: `make clean`
+- **Format code**: `make proto-format`
+- **Lint code**: `make proto-lint`
 
 ## Contributing
 
@@ -220,11 +199,3 @@ service DTVMTeeService {
 ## License
 
 This project is licensed under the terms specified in the repository.
-
-## Support
-
-For issues and questions:
-
-- Create an issue on GitHub
-- Check existing documentation
-- Review the protocol buffer definitions in `proto/dtvm/dtvm.proto`
