@@ -1,0 +1,93 @@
+name: Build and Deploy Binary to GCE
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_NAME: sev-snp-server # Corresponds to your application name
+  GCP_SERVICE_NAME: sev-snp-server # systemd service name on GCE
+
+jobs:
+  build-and-deploy-to-gce:
+    name: Build and Deploy Binary to GCE
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read' # Permission to checkout the repository
+      id-token: 'write' # Permission for google-github-actions/auth to authenticate
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }} # Assumes you are using Service Account Key JSON
+        # If using Workload Identity Federation, uncomment below and comment above
+        # workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.WIF_POOL_ID }}/providers/${{ secrets.WIF_PROVIDER_ID }}'
+        # service_account: '${{ secrets.GSA_EMAIL }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2' # Adjust to your Go version
+
+    - name: Install WasmEdge and dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y curl build-essential pkg-config git
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
+        source $HOME/.wasmedge/env
+        echo "$HOME/.wasmedge/bin" >> $GITHUB_PATH
+        # Set CGO flags for the build environment
+        echo "CGO_CFLAGS=-I$HOME/.wasmedge/include" >> $GITHUB_ENV
+        echo "CGO_LDFLAGS=-L$HOME/.wasmedge/lib -lwasmedge" >> $GITHUB_ENV
+        echo "CGO_ENABLED=1" >> $GITHUB_ENV
+        # Install Go dependencies
+        make deps
+
+    - name: Build application binary
+      run: make build # This should produce ./bin/${{ env.APP_NAME }}
+
+    - name: Deploy to GCE instance
+      run: |
+        LOCAL_BINARY_PATH="bin/${{ env.APP_NAME }}"
+        REMOTE_TEMP_PATH="/tmp/${{ env.APP_NAME }}"
+        REMOTE_FINAL_PATH="/usr/local/bin/${{ env.APP_NAME }}"
+        
+        echo "Copying ${LOCAL_BINARY_PATH} to GCE instance (${{ secrets.GCP_GCE_INSTANCE_NAME }}) at ${REMOTE_TEMP_PATH}"
+        gcloud compute scp "${LOCAL_BINARY_PATH}" \
+          "${{ secrets.GCP_GCE_INSTANCE_NAME }}:${REMOTE_TEMP_PATH}" \
+          --zone=${{ secrets.GCP_GCE_ZONE }} \
+          --project=${{ secrets.GCP_PROJECT_ID }} \
+          --quiet
+
+        echo "Executing deployment commands on GCE instance"
+        gcloud compute ssh ${{ secrets.GCP_GCE_INSTANCE_NAME }} \
+          --zone=${{ secrets.GCP_GCE_ZONE }} \
+          --project=${{ secrets.GCP_PROJECT_ID }} \
+          --quiet \
+          --command="
+            echo '--- Starting deployment on GCE instance ---'
+            
+            echo 'Stopping service: ${{ env.GCP_SERVICE_NAME }}'
+            sudo systemctl stop ${{ env.GCP_SERVICE_NAME }} || echo 'Service not running or failed to stop, continuing...'
+            
+            echo 'Moving binary from ${REMOTE_TEMP_PATH} to ${REMOTE_FINAL_PATH}'
+            sudo mv '${REMOTE_TEMP_PATH}' '${REMOTE_FINAL_PATH}'
+            sudo chmod +x '${REMOTE_FINAL_PATH}'
+            
+            echo 'Starting service: ${{ env.GCP_SERVICE_NAME }}'
+            sudo systemctl start ${{ env.GCP_SERVICE_NAME }}
+            
+            echo 'Checking service status (waiting 5s)...'
+            sleep 5
+            sudo systemctl status ${{ env.GCP_SERVICE_NAME }} --no-pager || echo 'Failed to get service status.'
+            
+            echo '--- Deployment on GCE instance finished ---'
+          "
