@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: sev-snp-server # Corresponds to your application name
+  APP_NAME: sev_snp_server # Corresponds to your application name
   GCP_SERVICE_NAME: sev-snp-server # systemd service name on GCE
 
 jobs:
