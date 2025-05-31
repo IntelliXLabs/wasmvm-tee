@@ -91,13 +91,13 @@ jobs:
             # Add WasmEdge environment to system-wide profile
             echo 'Configuring WasmEdge environment...'
             sudo tee /etc/profile.d/wasmedge.sh > /dev/null << 'EOL'
-
+            #!/bin/bash
             export WASMEDGE_DIR=\$HOME/.wasmedge
             export PATH=\$WASMEDGE_DIR/bin:\$PATH
             export LD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$LD_LIBRARY_PATH
             export DYLD_LIBRARY_PATH=\$WASMEDGE_DIR/lib:\$DYLD_LIBRARY_PATH
             export PKG_CONFIG_PATH=\$WASMEDGE_DIR/lib/pkgconfig:\$PKG_CONFIG_PATH
-
+            EOL
             
             # Source the environment for current session
             source /etc/profile.d/wasmedge.sh
