@@ -4,7 +4,7 @@ package dtvm;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/IntelliXLabs/dtvm-tee/dtvm";
+option go_package = "github.com/IntelliXLabs/wasmvm-tee/dtvm";
 
 // DTVMExecution represents a DTVM execution request containing
 // the bytecode and input parameters to be executed in TEE environment

@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/IntelliXLabs/dtvm-tee/dtvm"
+	"github.com/IntelliXLabs/wasmvm-tee/dtvm"
 )
 
 // Config represents the complete client configuration matching gRPC request structure

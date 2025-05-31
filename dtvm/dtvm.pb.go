@@ -673,7 +673,7 @@ const file_proto_dtvm_dtvm_proto_rawDesc = "" +
 	"\x12VALUE_TYPE_FLOAT32\x10\x03\x12\x16\n" +
 	"\x12VALUE_TYPE_FLOAT64\x10\x042q\n" +
 	"\x0eDTVMTeeService\x12_\n" +
-	"\aExecute\x12\x1a.dtvm.DTVMExecutionRequest\x1a\x1b.dtvm.DTVMExecutionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/dtvm/executeB'Z%github.com/IntelliXLabs/dtvm-tee/dtvmb\x06proto3"
+	"\aExecute\x12\x1a.dtvm.DTVMExecutionRequest\x1a\x1b.dtvm.DTVMExecutionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/dtvm/executeB)Z'github.com/IntelliXLabs/wasmvm-tee/dtvmb\x06proto3"
 
 var (
 	file_proto_dtvm_dtvm_proto_rawDescOnce sync.Once

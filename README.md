@@ -1,6 +1,6 @@
-# DTVM-TEE: Trusted Execution Environment for DTVM
+# WASMVM-TEE: Trusted Execution Environment for WASMVM
 
-A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecode within a Trusted Execution Environment (TEE) using AMD SEV-SNP technology. This project provides cryptographic attestation of execution results, ensuring integrity and confidentiality of computations.
+A secure gRPC service that executes WASMVM (WebAssembly Virtual Machine) bytecode within a Trusted Execution Environment (TEE) using AMD SEV-SNP technology. This project provides cryptographic attestation of execution results, ensuring integrity and confidentiality of computations.
 
 ## Architecture
 
@@ -8,13 +8,13 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   gRPC Client   │───▶│  DTVM-TEE       │───▶│   AMD SEV-SNP   │
+│   gRPC Client   │───▶│  WASMVM-TEE      │───▶│   AMD SEV-SNP   │
 │                 │    │  Server         │    │   Attestation   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
                               ▼
                        ┌─────────────────┐
-                       │   DTVM Runtime  │
+                       │   WASMVM Runtime  │
                        │   Execution     │
                        └─────────────────┘
 ```
@@ -26,10 +26,10 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 │   gRPC Client   │
 │                 │
 └─────────┬───────┘
-          │ DTVMExecutionRequest
+          │ WASMVMExecutionRequest
           ▼
 ┌─────────────────┐
-│  DTVM-TEE       │
+│  WASMVM-TEE      │
 │  Server         │
 │  ┌─────────────┐│
 │  │ Validation  ││
@@ -38,7 +38,7 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
           │ Bytecode + Inputs
           ▼
 ┌─────────────────┐
-│   DTVM Runtime  │
+│   WASMVM Runtime  │
 │   Execution     │
 │  ┌─────────────┐│
 │  │ WASM Engine ││
@@ -53,7 +53,7 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 │  │ Quote Gen   ││
 │  └─────────────┘│
 └─────────┬───────┘
-          │ DTVMExecutionResponse
+          │ WASMVMExecutionResponse
           ▼
 ┌─────────────────┐
 │   gRPC Client   │
@@ -64,12 +64,12 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 ### Components
 
 1. **gRPC Server** (`cmd/sev_snp_server/main.go`)
-   - Listens for DTVM execution requests
+   - Listens for WASMVM execution requests
    - Configurable port via command line arguments
    - Supports gRPC reflection for debugging
 
-2. **DTVM TEE Service** (`dtvm/server.go`)
-   - Implements `DTVMTeeService` gRPC interface
+2. **WASMVM TEE Service** (`dtvm/server.go`)
+   - Implements `WASMVMTeeService` gRPC interface
    - Handles bytecode execution in secure environment
    - Generates cryptographic attestations
 
@@ -103,8 +103,8 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/IntelliXLabs/dtvm-tee.git
-cd dtvm-tee
+git clone https://github.com/IntelliXLabs/wasmvm-tee.git
+cd wasmvm-tee
 ```
 
 2. Install dependencies:
@@ -154,18 +154,18 @@ make build
 
 ### Example Client Request
 
-The server expects `DTVMExecutionRequest` messages with the following structure:
+The server expects `WASMVMExecutionRequest` messages with the following structure:
 
 ```protobuf
-message DTVMExecutionRequest {
-  DTVMExecution execution = 1;
-  DTVMRuntimeConfig runtime_config = 2;
+message WASMVMExecutionRequest {
+  WASMVMExecution execution = 1;
+  WASMVMRuntimeConfig runtime_config = 2;
 }
 ```
 
 Where:
 
-- `execution.bytecode`: Base64-encoded DTVM bytecode
+- `execution.bytecode`: Base64-encoded WASMVM bytecode
 - `execution.fn_name`: Function name to execute
 - `execution.inputs`: Base64-encoded input parameters
 - `runtime_config.mode`: Execution mode (interpreter/compiler)
@@ -173,7 +173,7 @@ Where:
 
 ### Response Format
 
-The server returns `DTVMExecutionResponse` containing:
+The server returns `WASMVMExecutionResponse` containing:
 
 - `request_id`: Request tracking identifier
 - `result.output_values`: Typed execution results
@@ -217,8 +217,8 @@ make clean
 ### gRPC Service
 
 ```protobuf
-service DTVMTeeService {
-  rpc Execute(DTVMExecutionRequest) returns (DTVMExecutionResponse);
+service WASMVMTeeService {
+  rpc Execute(WASMVMExecutionRequest) returns (WASMVMExecutionResponse);
 }
 ```
 
@@ -231,9 +231,9 @@ service DTVMTeeService {
 
 ### Execution Modes
 
-- `DTVM_MODE_INTERP_UNSPECIFIED`: Interpreter mode (default)
-- `DTVM_MODE_SINGLEPASS`: Single-pass compilation
-- `DTVM_MODE_MULTIPASS`: Multi-pass compilation
+- `WASMVM_MODE_INTERP_UNSPECIFIED`: Interpreter mode (default)
+- `WASMVM_MODE_SINGLEPASS`: Single-pass compilation
+- `WASMVM_MODE_MULTIPASS`: Multi-pass compilation
 
 ## Security Considerations
 
@@ -244,8 +244,8 @@ service DTVMTeeService {
 
 ## Dependencies
 
-- [DTVM](https://github.com/DTVMStack/DTVM): Deterministic Virtual Machine with SmartCogent - The core WebAssembly runtime engine
-- [dtvm-go](https://github.com/IntelliXLabs/dtvm-go): DTVM runtime library
+- [WASMVM](https://github.com/WASMVMStack/WASMVM): WebAssembly Virtual Machine with SmartCogent - The core WebAssembly runtime engine
+- [wasmvm-go](https://github.com/IntelliXLabs/wasmvm-go): WASMVM runtime library
 - [go-sev-guest](https://github.com/google/go-sev-guest): AMD SEV-SNP attestation
 - [gRPC](https://grpc.io/): High-performance RPC framework
 - [Protocol Buffers](https://protobuf.dev/): Serialization framework

@@ -1,4 +1,4 @@
-.PHONY: proto clean build test help
+.PHONY: proto clean build test help build-wasm
 
 # Generate protobuf files including grpc-gateway
 proto:
@@ -23,9 +23,14 @@ build:
 	CGO_ENABLED=1 go build -o bin/sev_snp_client cmd/sev_snp_client/main.go
 	@echo "Build completed!"
 
-# Run tests
-test:
-	@echo "Running tests..."
+# Build WASM module before testing
+build-wasm:
+	@echo "Building WASM module..."
+	cd wasmedge/rust_host_func && cargo build --target wasm32-wasip1 --release
+
+# Run tests (build WASM first, then run Go tests)
+test: build-wasm
+	@echo "Running Go tests..."
 	go test ./...
 	@echo "Tests completed!"
 

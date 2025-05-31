@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/IntelliXLabs/dtvm-tee/dtvm"
+	"github.com/IntelliXLabs/wasmvm-tee/dtvm"
 )
 
 var (
@@ -205,7 +205,7 @@ func corsHandlerFunc(fn http.HandlerFunc) http.HandlerFunc {
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"status":"healthy","service":"dtvm-tee","timestamp":"%s"}`, time.Now().Format(time.RFC3339))
+	fmt.Fprintf(w, `{"status":"healthy","service":"wasmvm-tee","timestamp":"%s"}`, time.Now().Format(time.RFC3339))
 }
 
 // apiInfoHandler provides API documentation
@@ -214,14 +214,14 @@ func apiInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	apiInfo := map[string]interface{}{
-		"service":     "DTVM TEE Service",
+		"service":     "WASMVM TEE Service",
 		"version":     "1.0.0",
-		"description": "Trusted Execution Environment for DTVM",
+		"description": "Trusted Execution Environment for WASMVM",
 		"endpoints": map[string]interface{}{
 			"execute": map[string]interface{}{
 				"method":      "POST",
 				"path":        "/v1/dtvm/execute",
-				"description": "Execute DTVM bytecode in TEE environment",
+				"description": "Execute WASMVM bytecode in TEE environment",
 				"example": map[string]interface{}{
 					"execution": map[string]interface{}{
 						"version":    "1.0",
