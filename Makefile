@@ -3,7 +3,7 @@
 # Generate protobuf files including grpc-gateway
 proto:
 	@echo "Generating protobuf files with buf..."
-	buf generate
+	cd proto && buf generate
 	@echo "Moving generated files to correct location..."
 	@if [ -f proto/wasm/wasm_server.pb.go ]; then mv proto/wasm/*.pb.go wasm/; fi
 	@if [ -f proto/wasm/wasm_server.pb.gw.go ]; then mv proto/wasm/*.pb.gw.go wasm/; fi
@@ -36,13 +36,13 @@ test: build-wasm
 # Format proto files
 proto-format:
 	@echo "Formatting proto files..."
-	buf format -w proto
+	cd proto && buf format -w .
 	@echo "Proto files formatted!"
 
 # Lint proto files
 proto-lint:
 	@echo "Linting proto files..."
-	buf lint proto
+	cd proto && buf lint .
 	@echo "Proto lint completed!"
 
 # Install dependencies

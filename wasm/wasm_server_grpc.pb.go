@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: proto/wasm/wasm_server.proto
+// source: wasm/wasm_server.proto
 
 package wasm
 
@@ -117,5 +117,5 @@ var WASMVMTeeService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/wasm/wasm_server.proto",
+	Metadata: "wasm/wasm_server.proto",
 }
