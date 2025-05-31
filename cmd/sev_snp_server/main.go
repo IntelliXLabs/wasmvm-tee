@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/IntelliXLabs/dtvm-tee/dtvm"
+	"github.com/IntelliXLabs/wasmvm-tee/wasm"
 )
 
 var (
@@ -74,8 +74,8 @@ func startGRPCServer(ctx context.Context, port int) {
 	grpcServer := grpc.NewServer()
 
 	// Register DTVM TEE service
-	dtvmServer := &dtvm.Server{}
-	dtvm.RegisterDTVMTeeServiceServer(grpcServer, dtvmServer)
+	wasmServer := &wasm.Server{}
+	wasm.RegisterWASMVMTeeServiceServer(grpcServer, wasmServer)
 
 	log.Printf("✅ gRPC server listening at %v", listener.Addr())
 
@@ -109,7 +109,7 @@ func startHTTPServer(ctx context.Context, httpPort, grpcPort int) {
 	grpcServerEndpoint := fmt.Sprintf("localhost:%d", grpcPort)
 
 	// Register DTVM service handler
-	err := dtvm.RegisterDTVMTeeServiceHandlerFromEndpoint(ctx, mux, grpcServerEndpoint, opts)
+	err := wasm.RegisterWASMVMTeeServiceHandlerFromEndpoint(ctx, mux, grpcServerEndpoint, opts)
 	if err != nil {
 		log.Fatalf("Failed to register gateway: %v", err)
 	}
@@ -213,17 +213,17 @@ func apiInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	apiInfo := map[string]interface{}{
-		"service":     "DTVM TEE Service",
+	apiInfo := map[string]any{
+		"service":     "WASMVM TEE Service",
 		"version":     "1.0.0",
-		"description": "Trusted Execution Environment for DTVM",
-		"endpoints": map[string]interface{}{
-			"execute": map[string]interface{}{
+		"description": "Trusted Execution Environment for WASMVM",
+		"endpoints": map[string]any{
+			"execute": map[string]any{
 				"method":      "POST",
 				"path":        "/v1/dtvm/execute",
-				"description": "Execute DTVM bytecode in TEE environment",
-				"example": map[string]interface{}{
-					"execution": map[string]interface{}{
+				"description": "Execute WASMVM bytecode in TEE environment",
+				"example": map[string]any{
+					"execution": map[string]any{
 						"version":    "1.0",
 						"request_id": "test-001",
 						"bytecode":   "AGFzbQEAAAABCgJgAX8AYAF/AX8DAgEBBQMBAAEHBwEDZmliAAAKHgEcACAAQQJIBH9BAQUgAEEBaxAAIABBAmsQAGoLCwsHAQBBAAsBeA==",
@@ -231,16 +231,16 @@ func apiInfoHandler(w http.ResponseWriter, r *http.Request) {
 						"inputs":     []string{"5"},
 						"timestamp":  0,
 					},
-					"runtime_config": map[string]interface{}{
+					"runtime_config": map[string]any{
 						"mode": 0,
-						"gas_limit": map[string]interface{}{
+						"gas_limit": map[string]any{
 							"use_gas_limit": false,
 							"limit":         0,
 						},
 					},
 				},
 			},
-			"health": map[string]interface{}{
+			"health": map[string]any{
 				"method":      "GET",
 				"path":        "/health",
 				"description": "Service health check",

@@ -19,48 +19,6 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
                        └─────────────────┘
 ```
 
-### Detailed Flow
-
-```
-┌─────────────────┐
-│   gRPC Client   │
-│                 │
-└─────────┬───────┘
-          │ DTVMExecutionRequest
-          ▼
-┌─────────────────┐
-│  DTVM-TEE       │
-│  Server         │
-│  ┌─────────────┐│
-│  │ Validation  ││
-│  └─────────────┘│
-└─────────┬───────┘
-          │ Bytecode + Inputs
-          ▼
-┌─────────────────┐
-│   DTVM Runtime  │
-│   Execution     │
-│  ┌─────────────┐│
-│  │ WASM Engine ││
-│  └─────────────┘│
-└─────────┬───────┘
-          │ Results
-          ▼
-┌─────────────────┐
-│   AMD SEV-SNP   │
-│   Attestation   │
-│  ┌─────────────┐│
-│  │ Quote Gen   ││
-│  └─────────────┘│
-└─────────┬───────┘
-          │ DTVMExecutionResponse
-          ▼
-┌─────────────────┐
-│   gRPC Client   │
-│   (Response)    │
-└─────────────────┘
-```
-
 ### Components
 
 1. **gRPC Server** (`cmd/sev_snp_server/main.go`)
@@ -68,8 +26,8 @@ A secure gRPC service that executes DTVM (Deterministic Virtual Machine) bytecod
    - Configurable port via command line arguments
    - Supports gRPC reflection for debugging
 
-2. **DTVM TEE Service** (`dtvm/server.go`)
-   - Implements `DTVMTeeService` gRPC interface
+2. **WASMVM TEE Service** (`wasm/server.go`)
+   - Implements `WASMVMTeeService` gRPC interface
    - Handles bytecode execution in secure environment
    - Generates cryptographic attestations
 
