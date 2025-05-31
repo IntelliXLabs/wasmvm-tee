@@ -1,0 +1,92 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2'
+        cache: true
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+
+    - name: Add WASM target for Rust
+      run: rustup target add wasm32-wasip1
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential pkg-config git curl
+
+    - name: Install WasmEdge following official docs
+      run: |
+        # Install WasmEdge using the official installer script
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.14.0
+        
+        # Source the WasmEdge environment as recommended in the official docs
+        source $HOME/.wasmedge/env
+        
+        # Make the installed binary available in current session
+        echo "$HOME/.wasmedge/bin" >> $GITHUB_PATH
+        
+        # Set up all necessary environment variables
+        echo "WASMEDGE_DIR=$HOME/.wasmedge" >> $GITHUB_ENV
+        echo "WASMEDGE_LIB_DIR=$HOME/.wasmedge/lib" >> $GITHUB_ENV
+        echo "WASMEDGE_INCLUDE_DIR=$HOME/.wasmedge/include" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=$HOME/.wasmedge/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=$HOME/.wasmedge/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+        echo "CGO_CFLAGS=-I$HOME/.wasmedge/include" >> $GITHUB_ENV
+        echo "CGO_LDFLAGS=-L$HOME/.wasmedge/lib -lwasmedge" >> $GITHUB_ENV
+        echo "CGO_ENABLED=1" >> $GITHUB_ENV
+
+    - name: Verify WasmEdge installation
+      run: |
+        source $HOME/.wasmedge/env
+        echo "WasmEdge version: $(wasmedge --version)"
+        echo "WasmEdge binary location: $(which wasmedge)"
+        echo "Include files exist: $(ls -la $HOME/.wasmedge/include/wasmedge/ | wc -l) files"
+        echo "Library files exist: $(ls -la $HOME/.wasmedge/lib/ | grep -E '\.(so|a)$' | wc -l) files"
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          wasm/rust_host_func/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
+    - name: Download Go dependencies
+      run: go mod download
+      
+    - name: Run tests
+      run: make test
