@@ -3,10 +3,11 @@ use wasmedge_bindgen_macro::*;
 
 extern "C" {
     fn fetch(url_pointer: *const u8, url_length: i32) -> i32;
+    fn http(request_json_pointer: *const u8, request_json_length: i32) -> i32;
     fn write_mem(pointer: *const u8);
 }
 
-// 定义返回结构体
+// Define return structure
 #[derive(Debug)]
 pub struct ProcessResult {
     pub processed_u8: u8,
@@ -44,7 +45,114 @@ pub unsafe extern "C" fn say(s: String) -> String {
     return r + s.as_str();
 }
 
-// 使用 JSON 字符串返回复杂结果
+// HTTP functionality test function - GET request
+#[wasmedge_bindgen]
+pub unsafe extern "C" fn test_http_get() -> String {
+    // Build HTTP GET request JSON
+    let http_request = r#"{
+        "method": "GET",
+        "url": "https://httpbin.org/get",
+        "headers": {
+            "User-Agent": "WasmVM-TEE/1.0"
+        },
+        "timeout": 30
+    }"#;
+
+    let request_ptr = http_request.as_bytes().as_ptr();
+    let request_len = http_request.len() as i32;
+
+    // Call host's http function
+    let response_len = http(request_ptr, request_len) as usize;
+
+    // Allocate memory to receive response
+    let mut response_buffer = Vec::with_capacity(response_len);
+    let buffer_ptr = response_buffer.as_mut_ptr();
+
+    // Call host function to write response to memory
+    write_mem(buffer_ptr);
+
+    // Set buffer length and convert to string
+    response_buffer.set_len(response_len);
+    match std::str::from_utf8(&response_buffer) {
+        Ok(response_str) => response_str.to_string(),
+        Err(_) => "Failed to parse response".to_string(),
+    }
+}
+
+// HTTP functionality test function - POST request
+#[wasmedge_bindgen]
+pub unsafe extern "C" fn test_http_post() -> String {
+    // Build HTTP POST request JSON
+    let http_request = r#"{
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "headers": {
+            "Content-Type": "application/json",
+            "User-Agent": "WasmVM-TEE/1.0"
+        },
+        "body": "{\"message\": \"Hello from WASM!\", \"timestamp\": 1234567890}",
+        "timeout": 30
+    }"#;
+
+    let request_ptr = http_request.as_bytes().as_ptr();
+    let request_len = http_request.len() as i32;
+
+    // Call host's http function
+    let response_len = http(request_ptr, request_len) as usize;
+
+    // Allocate memory to receive response
+    let mut response_buffer = Vec::with_capacity(response_len);
+    let buffer_ptr = response_buffer.as_mut_ptr();
+
+    // Call host function to write response to memory
+    write_mem(buffer_ptr);
+
+    // Set buffer length and convert to string
+    response_buffer.set_len(response_len);
+    match std::str::from_utf8(&response_buffer) {
+        Ok(response_str) => response_str.to_string(),
+        Err(_) => "Failed to parse response".to_string(),
+    }
+}
+
+// HTTP functionality test function - request with custom headers
+#[wasmedge_bindgen]
+pub unsafe extern "C" fn test_http_with_headers() -> String {
+    // Build HTTP request with multiple custom headers
+    let http_request = r#"{
+        "method": "GET",
+        "url": "https://httpbin.org/headers",
+        "headers": {
+            "X-Custom-Header": "test-value",
+            "Authorization": "Bearer fake-token",
+            "Accept": "application/json",
+            "User-Agent": "WasmVM-TEE/1.0"
+        },
+        "timeout": 30
+    }"#;
+
+    let request_ptr = http_request.as_bytes().as_ptr();
+    let request_len = http_request.len() as i32;
+
+    // Call host's http function
+    let response_len = http(request_ptr, request_len) as usize;
+
+    // Allocate memory to receive response
+    let mut response_buffer = Vec::with_capacity(response_len);
+    let buffer_ptr = response_buffer.as_mut_ptr();
+
+    // Call host function to write response to memory
+    write_mem(buffer_ptr);
+
+    // Set buffer length and convert to string
+    response_buffer.set_len(response_len);
+    match std::str::from_utf8(&response_buffer) {
+        Ok(response_str) => response_str.to_string(),
+        Err(_) => "Failed to parse response".to_string(),
+    }
+}
+
+// Return complex results using JSON string
 #[wasmedge_bindgen]
 pub unsafe extern "C" fn process_complex_types_json(
     input_u8: u8,
@@ -59,7 +167,7 @@ pub unsafe extern "C" fn process_complex_types_json(
     let original_string_reversed: String = input_string.chars().rev().collect();
     let returned_vector: Vec<i32> = input_vector.iter().map(|&x| x * 2).collect();
 
-    // 返回 JSON 格式的字符串
+    // Return JSON formatted string
     format!(
         r#"{{"processed_u8": {}, "bytes_len": {}, "appended_string": "{}", "vector_sum": {}, "reversed_string": "{}", "doubled_vector": {:?}}}"#,
         processed_u8,
