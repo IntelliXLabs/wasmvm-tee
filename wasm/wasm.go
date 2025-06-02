@@ -40,6 +40,18 @@ func ExecuteWasm(wasmCode []byte, fnName string, params []any) ([]any, error) {
 	hostFetch := wasmedge.NewFunction(funcFetchType, h.fetch, nil, 0)
 	obj.AddFunction("fetch", hostFetch)
 
+	// Add HTTP link function - supports full HTTP requests with JSON
+	funcHttpType := wasmedge.NewFunctionType(
+		[]*wasmedge.ValType{
+			wasmedge.NewValTypeI32(),
+			wasmedge.NewValTypeI32(),
+		},
+		[]*wasmedge.ValType{
+			wasmedge.NewValTypeI32(),
+		})
+	hostHttp := wasmedge.NewFunction(funcHttpType, h.http, nil, 0)
+	obj.AddFunction("http", hostHttp)
+
 	funcWriteType := wasmedge.NewFunctionType(
 		[]*wasmedge.ValType{
 			wasmedge.NewValTypeI32(),
