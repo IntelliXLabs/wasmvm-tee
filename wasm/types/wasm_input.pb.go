@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: wasm/wasm_input.proto
 
-package wasm
+package types
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -795,7 +795,7 @@ const file_wasm_wasm_input_proto_rawDesc = "" +
 	"\x06values\x18\x01 \x03(\x04R\x06values\"$\n" +
 	"\n" +
 	"Int64Array\x12\x16\n" +
-	"\x06values\x18\x01 \x03(\x03R\x06valuesB)Z'github.com/IntelliXLabs/wasmvm-tee/wasmb\x06proto3"
+	"\x06values\x18\x01 \x03(\x03R\x06valuesB/Z-github.com/IntelliXLabs/wasmvm-tee/wasm/typesb\x06proto3"
 
 var (
 	file_wasm_wasm_input_proto_rawDescOnce sync.Once

@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: wasm/wasm_server.proto
 
-package wasm
+package types
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -312,7 +312,7 @@ const file_wasm_wasm_server_proto_rawDesc = "" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x123\n" +
 	"\x06result\x18\x02 \x01(\v2\x1b.wasm.WASMVMExecutionResultR\x06result2w\n" +
 	"\x10WASMVMTeeService\x12c\n" +
-	"\aExecute\x12\x1c.wasm.WASMVMExecutionRequest\x1a\x1d.wasm.WASMVMExecutionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/dtvm/executeB)Z'github.com/IntelliXLabs/wasmvm-tee/wasmb\x06proto3"
+	"\aExecute\x12\x1c.wasm.WASMVMExecutionRequest\x1a\x1d.wasm.WASMVMExecutionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/dtvm/executeB/Z-github.com/IntelliXLabs/wasmvm-tee/wasm/typesb\x06proto3"
 
 var (
 	file_wasm_wasm_server_proto_rawDescOnce sync.Once
