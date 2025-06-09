@@ -5,8 +5,9 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/IntelliXLabs/wasmvm-tee/wasm/types"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/IntelliXLabs/wasmvm-tee/wasm/types"
 )
 
 // These are placeholder constants. Replace them with the actual values
