@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/IntelliXLabs/wasmvm-tee/wasm"
+	"github.com/IntelliXLabs/wasmvm-tee/wasm/types"
 )
 
 var (
@@ -75,7 +76,7 @@ func startGRPCServer(ctx context.Context, port int) {
 
 	// Register DTVM TEE service
 	wasmServer := &wasm.Server{}
-	wasm.RegisterWASMVMTeeServiceServer(grpcServer, wasmServer)
+	types.RegisterWASMVMTeeServiceServer(grpcServer, wasmServer)
 
 	log.Printf("✅ gRPC server listening at %v", listener.Addr())
 
@@ -109,7 +110,7 @@ func startHTTPServer(ctx context.Context, httpPort, grpcPort int) {
 	grpcServerEndpoint := fmt.Sprintf("localhost:%d", grpcPort)
 
 	// Register DTVM service handler
-	err := wasm.RegisterWASMVMTeeServiceHandlerFromEndpoint(ctx, mux, grpcServerEndpoint, opts)
+	err := types.RegisterWASMVMTeeServiceHandlerFromEndpoint(ctx, mux, grpcServerEndpoint, opts)
 	if err != nil {
 		log.Fatalf("Failed to register gateway: %v", err)
 	}

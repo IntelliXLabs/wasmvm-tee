@@ -5,17 +5,19 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+
+	"github.com/IntelliXLabs/wasmvm-tee/wasm/types"
 )
 
-var _ WASMVMTeeServiceServer = (*Server)(nil)
+var _ types.WASMVMTeeServiceServer = (*Server)(nil)
 
 type Server struct {
-	UnimplementedWASMVMTeeServiceServer
+	types.UnimplementedWASMVMTeeServiceServer
 }
 
 // Execute handles WASMVM execution requests in TEE environment
 // Validates request, decodes bytecode and inputs, executes WASMVM, and returns results with attestation
-func (s *Server) Execute(ctx context.Context, req *WASMVMExecutionRequest) (*WASMVMExecutionResponse, error) {
+func (s *Server) Execute(ctx context.Context, req *types.WASMVMExecutionRequest) (*types.WASMVMExecutionResponse, error) {
 	// Validate request
 	if req.Execution == nil {
 		return nil, fmt.Errorf("execution request is nil")
@@ -28,7 +30,7 @@ func (s *Server) Execute(ctx context.Context, req *WASMVMExecutionRequest) (*WAS
 	}
 
 	// Build response
-	response := &WASMVMExecutionResponse{
+	response := &types.WASMVMExecutionResponse{
 		RequestId: req.Execution.RequestId,
 		Result:    result,
 	}
@@ -38,7 +40,7 @@ func (s *Server) Execute(ctx context.Context, req *WASMVMExecutionRequest) (*WAS
 
 // executeWASMVM performs the actual WASMVM execution with WasmEdge
 // Decodes bytecode, converts inputs, and executes the specified function
-func (s *Server) executeWASMVM(execution *WASMVMExecution) (*WASMVMExecutionResult, error) {
+func (s *Server) executeWASMVM(execution *types.WASMVMExecution) (*types.WASMVMExecutionResult, error) {
 	// Decode bytecode
 	bytecode, err := base64.StdEncoding.DecodeString(execution.Bytecode)
 	if err != nil {
@@ -68,7 +70,7 @@ func (s *Server) executeWASMVM(execution *WASMVMExecution) (*WASMVMExecutionResu
 		return nil, fmt.Errorf("failed to build attestation: %v", err)
 	}
 
-	return &WASMVMExecutionResult{
+	return &types.WASMVMExecutionResult{
 		Inputs:       execution.Inputs,
 		OutputValues: outputValues,
 		Attestation:  attestation,
@@ -78,7 +80,7 @@ func (s *Server) executeWASMVM(execution *WASMVMExecution) (*WASMVMExecutionResu
 
 // buildAttestationByExecution creates attestation data based on execution inputs and outputs
 // Calculates cryptographic hashes for integrity verification and generates TEE attestation
-func (s *Server) buildAttestationByExecution(execution *WASMVMExecution, outputValues []*WasmValue) (string, string, error) {
+func (s *Server) buildAttestationByExecution(execution *types.WASMVMExecution, outputValues []*types.WasmValue) (string, string, error) {
 	// Calculate cryptographic hashes for integrity verification
 	inputHash, err := s.calculateStandardHash(execution)
 	if err != nil {

@@ -3,17 +3,17 @@
 # Generate protobuf files including grpc-gateway
 proto:
 	@echo "Generating protobuf files with buf..."
+	@echo "Creating wasm/types directory if it doesn't exist..."
+	@mkdir -p wasm/types
 	cd proto && buf generate
-	@echo "Moving generated files to correct location..."
-	@if [ -f proto/wasm/wasm_server.pb.go ]; then mv proto/wasm/*.pb.go wasm/; fi
-	@if [ -f proto/wasm/wasm_server.pb.gw.go ]; then mv proto/wasm/*.pb.gw.go wasm/; fi
-	@if [ -f proto/wasm/wasm_server.swagger.json ]; then mv proto/wasm/*.swagger.json wasm/; fi
-	@echo "Protobuf files generated successfully!"
+	@echo "Moving files to correct location if needed..."
+	@if [ -d wasm/types/wasm ]; then mv wasm/types/wasm/* wasm/types/ && rmdir wasm/types/wasm; fi
+	@echo "Protobuf files generated successfully in wasm/types/!"
 
 # Clean generated files
 clean:
 	@echo "Cleaning generated files..."
-	rm -rf dtvm/dtvm.pb.go dtvm/dtvm_grpc.pb.go
+	rm -rf wasm/types/*.pb.go wasm/types/*.pb.gw.go wasm/types/*.swagger.json
 	@echo "Clean completed!"
 
 # Build the project

@@ -5,7 +5,7 @@ package wasm;
 import "google/api/annotations.proto";
 import "wasm/wasm_input.proto";
 
-option go_package = "github.com/IntelliXLabs/wasmvm-tee/wasm";
+option go_package = "github.com/IntelliXLabs/wasmvm-tee/wasm/types";
 
 // WASMVMExecution represents a WASMVM execution request containing
 // the bytecode and input parameters to be executed in TEE environment

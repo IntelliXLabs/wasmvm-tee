@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/IntelliXLabs/wasmvm-tee/wasm/types"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -62,7 +63,7 @@ func (s *Server) calculateStandardHash(messages ...proto.Message) ([32]byte, err
 }
 
 // calculateOutputHash wraps output values for hash calculation
-func (s *Server) calculateOutputHash(outputs []*WasmValue) ([32]byte, error) {
+func (s *Server) calculateOutputHash(outputs []*types.WasmValue) ([32]byte, error) {
 	messages := make([]proto.Message, len(outputs))
 	for i, v := range outputs {
 		messages[i] = v
@@ -71,7 +72,7 @@ func (s *Server) calculateOutputHash(outputs []*WasmValue) ([32]byte, error) {
 	return s.calculateStandardHash(messages...)
 }
 
-func ConvertWasmValuesToInterface(input []*WasmValue) ([]interface{}, error) {
+func ConvertWasmValuesToInterface(input []*types.WasmValue) ([]interface{}, error) {
 	if input == nil {
 		return nil, fmt.Errorf("input WasmValue is nil")
 	}
@@ -90,49 +91,49 @@ func ConvertWasmValuesToInterface(input []*WasmValue) ([]interface{}, error) {
 
 // ConvertWasmValueToInterface converts an WasmValue protobuf message to a Go interface{}.
 // This interface{} can then be used as a parameter for wasmedge-bindgen's Execute function.
-func ConvertWasmValueToInterface(input *WasmValue) (interface{}, error) {
+func ConvertWasmValueToInterface(input *types.WasmValue) (interface{}, error) {
 	if input == nil {
 		return nil, fmt.Errorf("input WasmValue is nil")
 	}
 
 	switch v := input.Value.(type) {
 	// Basic Numeric Types
-	case *WasmValue_BoolValue:
+	case *types.WasmValue_BoolValue:
 		return v.BoolValue, nil
-	case *WasmValue_Int8Value:
+	case *types.WasmValue_Int8Value:
 		// Protobuf stores this as int32, so we cast it back to int8.
 		// It's crucial that the value was originally an int8.
 		return int8(v.Int8Value), nil
-	case *WasmValue_Uint8Value:
+	case *types.WasmValue_Uint8Value:
 		// Protobuf stores this as uint32, cast back to uint8.
 		return uint8(v.Uint8Value), nil
-	case *WasmValue_Int16Value:
+	case *types.WasmValue_Int16Value:
 		// Protobuf stores this as int32, cast back to int16.
 		return int16(v.Int16Value), nil
-	case *WasmValue_Uint16Value:
+	case *types.WasmValue_Uint16Value:
 		// Protobuf stores this as uint32, cast back to uint16.
 		return uint16(v.Uint16Value), nil
-	case *WasmValue_Int32Value:
+	case *types.WasmValue_Int32Value:
 		return v.Int32Value, nil
-	case *WasmValue_Uint32Value:
+	case *types.WasmValue_Uint32Value:
 		return v.Uint32Value, nil
-	case *WasmValue_Int64Value:
+	case *types.WasmValue_Int64Value:
 		return v.Int64Value, nil
-	case *WasmValue_Uint64Value:
+	case *types.WasmValue_Uint64Value:
 		return v.Uint64Value, nil
-	case *WasmValue_Float32Value:
+	case *types.WasmValue_Float32Value:
 		return v.Float32Value, nil
-	case *WasmValue_Float64Value:
+	case *types.WasmValue_Float64Value:
 		return v.Float64Value, nil
 
 	// String and Byte Array
-	case *WasmValue_StringValue:
+	case *types.WasmValue_StringValue:
 		return v.StringValue, nil
-	case *WasmValue_BytesValue:
+	case *types.WasmValue_BytesValue:
 		return v.BytesValue, nil
 
 	// Array Types
-	case *WasmValue_Int8Array:
+	case *types.WasmValue_Int8Array:
 		if v.Int8Array == nil {
 			return []int8{}, nil // Return empty slice if nil
 		}
@@ -142,7 +143,7 @@ func ConvertWasmValueToInterface(input *WasmValue) (interface{}, error) {
 			arr[i] = int8(val)
 		}
 		return arr, nil
-	case *WasmValue_Uint16Array:
+	case *types.WasmValue_Uint16Array:
 		if v.Uint16Array == nil {
 			return []uint16{}, nil
 		}
@@ -151,7 +152,7 @@ func ConvertWasmValueToInterface(input *WasmValue) (interface{}, error) {
 			arr[i] = uint16(val)
 		}
 		return arr, nil
-	case *WasmValue_Int16Array:
+	case *types.WasmValue_Int16Array:
 		if v.Int16Array == nil {
 			return []int16{}, nil
 		}
@@ -160,22 +161,22 @@ func ConvertWasmValueToInterface(input *WasmValue) (interface{}, error) {
 			arr[i] = int16(val)
 		}
 		return arr, nil
-	case *WasmValue_Uint32Array:
+	case *types.WasmValue_Uint32Array:
 		if v.Uint32Array == nil {
 			return []uint32{}, nil
 		}
 		return v.Uint32Array.Values, nil // Direct use as it's already []uint32
-	case *WasmValue_Int32Array:
+	case *types.WasmValue_Int32Array:
 		if v.Int32Array == nil {
 			return []int32{}, nil
 		}
 		return v.Int32Array.Values, nil // Direct use
-	case *WasmValue_Uint64Array:
+	case *types.WasmValue_Uint64Array:
 		if v.Uint64Array == nil {
 			return []uint64{}, nil
 		}
 		return v.Uint64Array.Values, nil // Direct use
-	case *WasmValue_Int64Array:
+	case *types.WasmValue_Int64Array:
 		if v.Int64Array == nil {
 			return []int64{}, nil
 		}
@@ -200,12 +201,12 @@ func ConvertWasmValueToInterface(input *WasmValue) (interface{}, error) {
 //
 // This function focuses on converting the final Go typed values from bindgen
 // (e.g., a Go string, a Go []int8) into the WasmValue protobuf structure.
-func ConvertBindgenExecuteResultToWasmValues(bindgenResults []interface{}) ([]*WasmValue, error) {
+func ConvertBindgenExecuteResultToWasmValues(bindgenResults []interface{}) ([]*types.WasmValue, error) {
 	if bindgenResults == nil {
-		return []*WasmValue{}, nil
+		return []*types.WasmValue{}, nil
 	}
 
-	wasmValues := make([]*WasmValue, len(bindgenResults))
+	wasmValues := make([]*types.WasmValue, len(bindgenResults))
 	var err error
 
 	for i, result := range bindgenResults {
@@ -218,62 +219,62 @@ func ConvertBindgenExecuteResultToWasmValues(bindgenResults []interface{}) ([]*W
 
 		switch v := result.(type) {
 		case bool:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_BoolValue{BoolValue: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_BoolValue{BoolValue: v}}
 		case int8:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int8Value{Int8Value: int32(v)}} // Protobuf uses int32 for int8
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int8Value{Int8Value: int32(v)}} // Protobuf uses int32 for int8
 		case uint8:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint8Value{Uint8Value: uint32(v)}} // Protobuf uses uint32 for uint8
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint8Value{Uint8Value: uint32(v)}} // Protobuf uses uint32 for uint8
 		case int16:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int16Value{Int16Value: int32(v)}} // Protobuf uses int32 for int16
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int16Value{Int16Value: int32(v)}} // Protobuf uses int32 for int16
 		case uint16:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint16Value{Uint16Value: uint32(v)}} // Protobuf uses uint32 for uint16
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint16Value{Uint16Value: uint32(v)}} // Protobuf uses uint32 for uint16
 		case int32:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int32Value{Int32Value: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int32Value{Int32Value: v}}
 		case uint32:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint32Value{Uint32Value: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint32Value{Uint32Value: v}}
 		case int64:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int64Value{Int64Value: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int64Value{Int64Value: v}}
 		case uint64:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint64Value{Uint64Value: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint64Value{Uint64Value: v}}
 		case float32:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Float32Value{Float32Value: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Float32Value{Float32Value: v}}
 		case float64:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Float64Value{Float64Value: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Float64Value{Float64Value: v}}
 		case string:
-			wasmValues[i] = &WasmValue{Value: &WasmValue_StringValue{StringValue: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_StringValue{StringValue: v}}
 		case []byte: // This covers ByteArray
-			wasmValues[i] = &WasmValue{Value: &WasmValue_BytesValue{BytesValue: v}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_BytesValue{BytesValue: v}}
 		case []int8: // This covers I8Array
 			// Convert []int8 to []int32 for protobuf
 			values := make([]int32, len(v))
 			for j, item := range v {
 				values[j] = int32(item)
 			}
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int8Array{Int8Array: &Int8Array{Values: values}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int8Array{Int8Array: &types.Int8Array{Values: values}}}
 		case []uint16: // This covers U16Array
 			values := make([]uint32, len(v))
 			for j, item := range v {
 				values[j] = uint32(item)
 			}
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint16Array{Uint16Array: &Uint16Array{Values: values}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint16Array{Uint16Array: &types.Uint16Array{Values: values}}}
 		case []int16: // This covers I16Array
 			values := make([]int32, len(v))
 			for j, item := range v {
 				values[j] = int32(item)
 			}
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int16Array{Int16Array: &Int16Array{Values: values}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int16Array{Int16Array: &types.Int16Array{Values: values}}}
 		case []uint32: // This covers U32Array
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint32Array{Uint32Array: &Uint32Array{Values: v}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint32Array{Uint32Array: &types.Uint32Array{Values: v}}}
 		case []int32: // This covers I32Array
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int32Array{Int32Array: &Int32Array{Values: v}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int32Array{Int32Array: &types.Int32Array{Values: v}}}
 		case []uint64: // This covers U64Array
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Uint64Array{Uint64Array: &Uint64Array{Values: v}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Uint64Array{Uint64Array: &types.Uint64Array{Values: v}}}
 		case []int64: // This covers I64Array
-			wasmValues[i] = &WasmValue{Value: &WasmValue_Int64Array{Int64Array: &Int64Array{Values: v}}}
+			wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int64Array{Int64Array: &types.Int64Array{Values: v}}}
 		// Note: wasmedge-bindgen's 'Rune' type might be an alias for int32.
 		// If it's a distinct type, you'd need a case for it.
 		// case rune:
-		// wasmValues[i] = &WasmValue{Value: &WasmValue_Int32Value{Int32Value: int32(v)}}
+		// wasmValues[i] = &types.WasmValue{Value: &types.WasmValue_Int32Value{Int32Value: int32(v)}}
 		default:
 			return nil, fmt.Errorf("unsupported type in bindgen result at index %d: %T", i, result)
 		}

@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: wasm/wasm_server.proto
 
-package wasm
+package types
 
 import (
 	context "context"
